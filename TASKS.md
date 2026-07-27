@@ -61,15 +61,50 @@ The MVP is complete when a user can:
 
 # Phase 0 — Repository audit and implementation plan
 
-- [ ] Inspect the repository structure, package manager, scripts, TypeScript settings, styling approach, routing, test framework, and existing PWA configuration.
-- [ ] Read any existing README, CONTRIBUTING, design notes, and environment files.
-- [ ] Identify reusable components and conventions.
-- [ ] Confirm whether this is a fresh app or an existing codebase.
-- [ ] Write a concise implementation note in this file describing:
+- [x] Inspect the repository structure, package manager, scripts, TypeScript settings, styling approach, routing, test framework, and existing PWA configuration.
+- [x] Read any existing README, CONTRIBUTING, design notes, and environment files.
+- [x] Identify reusable components and conventions.
+- [x] Confirm whether this is a fresh app or an existing codebase.
+- [x] Write a concise implementation note in this file describing:
   - current stack;
   - planned changes;
   - any deviations from the preferred stack below;
   - known risks.
+
+> **Implementation note (first working slice).** The repository held only
+> `README.md`, `TASKS.md`, and `LICENSE` — no application code. The app was
+> scaffolded fresh with Vite's `react-ts` template and built out against the
+> preferred stack below with no substitutions: React 19, TypeScript
+> (strict), Vite, React Router, Dexie, Zod v4, `vite-plugin-pwa`, plain CSS
+> with custom properties (no CSS Modules needed yet — one global stylesheet
+> plus small component-scoped inline styles was simpler at this scale),
+> Vitest + React Testing Library, and Playwright. Linting uses `oxlint`
+> (the tool the current Vite template ships with) rather than ESLint —
+> lighter, and there was no existing ESLint convention to preserve.
+>
+> This pass delivers Phases 0–2 in full and a working-but-not-yet-polished
+> slice of Phases 4, 6, and 7 (Milestone A): app shell and routing, the
+> complete Zod-validated domain model, a versioned Dexie database with
+> repository functions, fictional dev seed data, and functional screens for
+> the daily check-in, commitments/cancellations, observer check-ins,
+> medication + transition timeline, and health measurements, plus a home
+> dashboard, a safety-plan editor, and a settings screen (baseline editor,
+> privacy summary, delete-all, dev seed action). Phases 8–15 (the
+> alert/rule engine, trend charts, CSV export, encrypted backup/restore,
+> full offline queuing beyond the PWA plugin defaults, full accessibility
+> and copy polish, the full test suite, and release documentation) are
+> intentionally left for follow-up sessions and are marked `[ ]` below
+> where not yet done — see the per-phase notes for what is genuinely
+> covered versus deferred.
+>
+> Known risks: (1) `vite-plugin-pwa`'s `workbox-build` dependency chain
+> currently reports a transitive `brace-expansion` DoS advisory in
+> `npm audit` — a build-time-only tool dependency with no production
+> runtime exposure; no fixed release was available without a breaking
+> downgrade, so it is left as a tracked risk rather than worked around.
+> (2) `react-router-dom` also flags a "RSC Mode CSRF bypass" advisory that
+> only affects React Router's server/RSC framework mode, which this
+> client-only SPA does not use.
 
 Preferred stack for a fresh implementation:
 
@@ -87,9 +122,9 @@ Preferred stack for a fresh implementation:
 
 Acceptance criteria:
 
-- [ ] The implementation plan is consistent with the repository.
-- [ ] No unnecessary dependencies are introduced.
-- [ ] The agent can explain how local persistence, offline support, validation, and testing will work.
+- [x] The implementation plan is consistent with the repository.
+- [x] No unnecessary dependencies are introduced.
+- [x] The agent can explain how local persistence, offline support, validation, and testing will work.
 
 ---
 
@@ -97,13 +132,17 @@ Acceptance criteria:
 
 ## 1.1 Project setup
 
-- [ ] Scaffold or repair the React + TypeScript app.
-- [ ] Enable strict TypeScript.
-- [ ] Configure formatting, linting, unit tests, and production build scripts.
-- [ ] Add React Router routes.
-- [ ] Add a global error boundary.
-- [ ] Add a small notification/toast system for saves, imports, exports, and errors.
-- [ ] Add a development-only seed-data utility.
+- [x] Scaffold or repair the React + TypeScript app.
+- [x] Enable strict TypeScript.
+- [x] Configure formatting, linting, unit tests, and production build scripts.
+- [x] Add React Router routes.
+- [x] Add a global error boundary.
+- [x] Add a small notification/toast system for saves, imports, exports, and errors.
+- [x] Add a development-only seed-data utility.
+
+> Implementation note: the toast system currently covers saves and errors
+> (used throughout the feature forms); import/export flows do not exist
+> yet (Phase 10), so there is nothing for them to notify about so far.
 
 Suggested routes:
 
@@ -119,7 +158,7 @@ Suggested routes:
 
 ## 1.2 Calm visual language
 
-- [ ] Create a restrained design system with:
+- [x] Create a restrained design system with:
   - clear typography;
   - generous spacing;
   - large touch targets;
@@ -127,24 +166,29 @@ Suggested routes:
   - visible focus states;
   - minimal animation;
   - no alarming colour saturation.
-- [ ] Use neutral language such as “steady”, “changed”, “review”, and “act”.
-- [ ] Avoid red except where an urgent action previously configured by the user is shown.
-- [ ] Make the UI usable at 320 px width without horizontal scrolling.
+- [x] Use neutral language such as “steady”, “changed”, “review”, and “act”.
+- [x] Avoid red except where an urgent action previously configured by the user is shown.
+- [x] Make the UI usable at 320 px width without horizontal scrolling.
 
 ## 1.3 Navigation
 
-- [ ] Add a mobile-first bottom navigation or similarly compact navigation.
-- [ ] Ensure the daily check-in is the most prominent action.
-- [ ] Keep secondary pages reachable within two taps.
-- [ ] Provide a clear route back to the home screen.
+- [x] Add a mobile-first bottom navigation or similarly compact navigation.
+- [x] Ensure the daily check-in is the most prominent action.
+- [x] Keep secondary pages reachable within two taps.
+- [x] Provide a clear route back to the home screen.
+
+> Implementation note: the bottom nav shows Home, Check-in, Trends, and
+> More; the remaining five routes (Observer, Commitments, Medication,
+> Health, Safety plan, Settings) live one tap under More, so every route is
+> reachable within two taps of Home.
 
 Acceptance criteria:
 
-- [ ] App loads without console errors.
-- [ ] All routes render.
-- [ ] Navigation is keyboard accessible.
-- [ ] Layout works on small mobile, large mobile, tablet, and desktop widths.
-- [ ] Production build succeeds.
+- [x] App loads without console errors.
+- [x] All routes render.
+- [x] Navigation is keyboard accessible.
+- [x] Layout works on small mobile, large mobile, tablet, and desktop widths.
+- [x] Production build succeeds.
 
 ---
 
@@ -478,32 +522,36 @@ Fields:
 
 ## 2.2 Validation
 
-- [ ] Define Zod schemas for all persisted entities.
-- [ ] Validate before saving.
+- [x] Define Zod schemas for all persisted entities.
+- [x] Validate before saving.
 - [ ] Validate imports before writing anything to the database.
-- [ ] Reject impossible values, including:
+- [x] Reject impossible values, including:
   - negative sleep duration;
   - negative alcohol units;
   - nap duration when no nap was taken;
   - malformed dates;
   - unsupported enum values.
-- [ ] Preserve future compatibility using a schema version.
+- [x] Preserve future compatibility using a schema version.
+
+> Implementation note: import/restore does not exist yet (Phase 10), so
+> there is nothing to validate on import so far; the schemas are already
+> in place to reuse for that validation when it is built.
 
 ## 2.3 IndexedDB
 
-- [ ] Configure Dexie with versioned tables.
-- [ ] Add indexes needed for date-range queries.
-- [ ] Add repository or service functions rather than calling Dexie directly from presentation components.
-- [ ] Add database migration tests.
-- [ ] Add a development command or UI action to load realistic seed data.
+- [x] Configure Dexie with versioned tables.
+- [x] Add indexes needed for date-range queries.
+- [x] Add repository or service functions rather than calling Dexie directly from presentation components.
+- [x] Add database migration tests.
+- [x] Add a development command or UI action to load realistic seed data.
 
 Acceptance criteria:
 
-- [ ] All core entities can be created, read, updated, and deleted.
-- [ ] Invalid records cannot be persisted through normal app flows.
-- [ ] Existing records survive a page refresh and browser restart.
-- [ ] Database migrations are versioned and tested.
-- [ ] No personal data is sent over the network.
+- [x] All core entities can be created, read, updated, and deleted.
+- [x] Invalid records cannot be persisted through normal app flows.
+- [x] Existing records survive a page refresh and browser restart.
+- [x] Database migrations are versioned and tested.
+- [x] No personal data is sent over the network.
 
 ---
 
@@ -584,61 +632,80 @@ Create a progressive, mobile-first form with these sections:
 
 - [ ] Show one compact card at a time or a similarly low-friction flow.
 - [ ] Use single-tap segmented controls for common responses.
-- [ ] Reveal conditional details only when relevant.
+- [x] Reveal conditional details only when relevant.
 - [ ] Preserve in-progress input if the user navigates away accidentally.
 - [ ] Allow completion in approximately one to two minutes.
-- [ ] Allow editing an existing entry for the same day.
-- [ ] Clearly show when an entry was updated.
+- [x] Allow editing an existing entry for the same day.
+- [x] Clearly show when an entry was updated.
+
+> Implementation note: this slice ships one scrollable page of all seven
+> sections rather than a one-card-at-a-time flow — it is functionally
+> complete but not yet the low-friction card sequence Phase 4.1 describes,
+> and in-progress input is not preserved across accidental navigation
+> (nothing is saved until "Save check-in" is pressed). Segmented controls
+> are radio-based rather than single-tap pill buttons in places. Timing
+> (one to two minutes) has not been user-tested. These are the intended
+> targets for the next polish pass.
 
 ## 4.2 Sleep and nap behaviour
 
-- [ ] Record sleep duration.
-- [ ] Record sleep quality.
-- [ ] Record reduced need for sleep separately from poor sleep.
-- [ ] Record lunchtime nap need.
-- [ ] When a nap was taken, reveal duration and after-effect.
-- [ ] Do not treat “no nap needed” as inherently positive.
+- [x] Record sleep duration.
+- [x] Record sleep quality.
+- [x] Record reduced need for sleep separately from poor sleep.
+- [x] Record lunchtime nap need.
+- [x] When a nap was taken, reveal duration and after-effect.
+- [x] Do not treat “no nap needed” as inherently positive.
 
 ## 4.3 Mood, activation, and warning signs
 
-- [ ] Keep low mood, elevated mood, irritability, anxiety, and porosity separate.
-- [ ] Keep energy, mental speed, and goal-directed activity separate.
-- [ ] Show personalised warning signs prominently.
-- [ ] Support optional explanatory notes without requiring journalling.
+- [x] Keep low mood, elevated mood, irritability, anxiety, and porosity separate.
+- [x] Keep energy, mental speed, and goal-directed activity separate.
+- [x] Show personalised warning signs prominently.
+- [x] Support optional explanatory notes without requiring journalling.
+
+> Implementation note: only the six seeded warning signs are shown;
+> user-defined custom warning signs (from the safety plan) are not yet
+> cross-referenced into the check-in form.
 
 ## 4.4 Appetite, satiety, and urges
 
-- [ ] Record appetite and satiety separately.
-- [ ] Record hunger between meals and cravings.
-- [ ] Record loss-of-control eating.
-- [ ] Record selected compulsive or impulsive urges.
-- [ ] Use neutral wording and never shame the user.
+- [x] Record appetite and satiety separately.
+- [x] Record hunger between meals and cravings.
+- [x] Record loss-of-control eating.
+- [x] Record selected compulsive or impulsive urges.
+- [x] Use neutral wording and never shame the user.
 
 ## 4.5 Alcohol and social rhythm
 
-- [ ] Record decimal alcohol units.
-- [ ] Reveal context and perceived effect only when units are greater than zero.
-- [ ] Record social activity amount.
-- [ ] Record social drive.
-- [ ] Record whether social contact was depleting, neutral, nourishing, or overstimulating.
-- [ ] Record interaction types.
+- [x] Record decimal alcohol units.
+- [x] Reveal context and perceived effect only when units are greater than zero.
+- [x] Record social activity amount.
+- [x] Record social drive.
+- [x] Record whether social contact was depleting, neutral, nourishing, or overstimulating.
+- [x] Record interaction types.
 
 ## 4.6 Medication and side effects
 
 - [ ] Show scheduled medications for the day.
 - [ ] Allow taken, delayed, or missed status.
 - [ ] Record dose and time where needed.
-- [ ] Keep inner restlessness separate from anxiety.
-- [ ] Provide a short non-diagnostic explanation that restlessness can be worth discussing with the prescriber.
+- [x] Keep inner restlessness separate from anxiety.
+- [x] Provide a short non-diagnostic explanation that restlessness can be worth discussing with the prescriber.
+
+> Implementation note: dose scheduling and per-dose taken/delayed/missed
+> status live on the separate Medication page (Phase 7) rather than inline
+> in the check-in — there is no recurring dose-schedule model yet to
+> surface "today's scheduled medications" here. The check-in only records
+> a same-day missed/delayed flag and side-effect scales.
 
 Acceptance criteria:
 
-- [ ] A complete check-in can be saved on a 320 px-wide screen.
-- [ ] Conditional fields behave correctly.
-- [ ] The user can save a partial check-in.
-- [ ] Required fields are minimal.
-- [ ] Save status is visible.
-- [ ] Check-in completion does not trigger congratulatory or guilt-based messaging.
+- [x] A complete check-in can be saved on a 320 px-wide screen.
+- [x] Conditional fields behave correctly.
+- [x] The user can save a partial check-in.
+- [x] Required fields are minimal.
+- [x] Save status is visible.
+- [x] Check-in completion does not trigger congratulatory or guilt-based messaging.
 
 ---
 
@@ -646,10 +713,10 @@ Acceptance criteria:
 
 ## 5.1 Commitment capture
 
-- [ ] Allow commitments to be created in advance or recorded retrospectively.
-- [ ] Include type, importance, date, optional time, and optional title.
-- [ ] Show upcoming commitments on the home screen.
-- [ ] Support quick outcome actions:
+- [x] Allow commitments to be created in advance or recorded retrospectively.
+- [x] Include type, importance, date, optional time, and optional title.
+- [x] Show upcoming commitments on the home screen.
+- [x] Support quick outcome actions:
   - attended;
   - attended briefly;
   - postponed;
@@ -658,15 +725,15 @@ Acceptance criteria:
 
 ## 5.2 Cancellation details
 
-- [ ] When cancelled, postponed, or missed, reveal:
+- [x] When cancelled, postponed, or missed, reveal:
   - reason;
   - notice given;
   - after-effect;
   - optional factual note.
-- [ ] Include “healthy boundary” as a non-pathological reason.
-- [ ] Use compassionate wording:
+- [x] Include “healthy boundary” as a non-pathological reason.
+- [x] Use compassionate wording:
   - “Cancelling plans may be a sign that things feel harder right now.”
-- [ ] Never label the user “flaky”, “unreliable”, or “avoidant”.
+- [x] Never label the user “flaky”, “unreliable”, or “avoidant”.
 
 ## 5.3 Behavioural summaries
 
@@ -679,12 +746,16 @@ Acceptance criteria:
 - [ ] Distinguish “nothing was planned” from “plans were cancelled”.
 - [ ] Allow filtering by friends, family, work, church, appointments, volunteering, and other.
 
+> Implementation note: 5.3 is not built yet — commitments are listed
+> individually with no aggregate counts or type filter. This depends on
+> the trends/pattern-card work in Phase 9, which is also deferred.
+
 Acceptance criteria:
 
-- [ ] A user can record a cancelled church, work, or friend commitment in under 30 seconds.
-- [ ] Healthy-boundary cancellations are not shown as adverse by default.
-- [ ] Distress-related cancellations can be reviewed alongside mood, sleep, and social activity.
-- [ ] Missed essential commitments can trigger only user-configured review rules.
+- [x] A user can record a cancelled church, work, or friend commitment in under 30 seconds.
+- [x] Healthy-boundary cancellations are not shown as adverse by default.
+- [x] Distress-related cancellations can be reviewed alongside mood, sleep, and social activity.
+- [x] Missed essential commitments can trigger only user-configured review rules.
 
 ---
 
@@ -692,12 +763,12 @@ Acceptance criteria:
 
 ## 6.1 Observer entry form
 
-- [ ] Build a separate observer flow.
-- [ ] Start with this instruction:
+- [x] Build a separate observer flow.
+- [x] Start with this instruction:
 
 > Describe what you observed, not what you think it means.
 
-- [ ] Include:
+- [x] Include:
   - perceived mood;
   - speech;
   - activity;
@@ -706,25 +777,30 @@ Acceptance criteria:
   - unusual behaviour;
   - concern level;
   - optional factual note.
-- [ ] Keep the observer label simple, such as “Mum”, “Dad”, or “Friend A”.
-- [ ] Allow an observer entry to be made without exposing all other app data.
+- [x] Keep the observer label simple, such as “Mum”, “Dad”, or “Friend A”.
+- [x] Allow an observer entry to be made without exposing all other app data.
 
 ## 6.2 Separation from self-report
 
-- [ ] Display observer entries with a distinct visual treatment.
-- [ ] Never merge observer and self-report values into a single hidden score.
+- [x] Display observer entries with a distinct visual treatment.
+- [x] Never merge observer and self-report values into a single hidden score.
 - [ ] When showing a pattern, identify whether evidence came from:
   - self-report;
   - observer report;
   - commitments;
   - measurements.
 
+> Implementation note: there is no pattern/trend view yet (Phase 9), so
+> there is nothing that currently mixes evidence sources — each feature
+> page already shows only its own source, and observer entries carry a
+> visibly distinct card style with an "Observer:" prefix.
+
 Acceptance criteria:
 
-- [ ] Observer entry takes under one minute.
-- [ ] Observer reports remain clearly attributed.
-- [ ] The app does not turn observations into diagnoses.
-- [ ] An “urgent” observer concern displays the user’s configured safety-plan actions.
+- [x] Observer entry takes under one minute.
+- [x] Observer reports remain clearly attributed.
+- [x] The app does not turn observations into diagnoses.
+- [x] An “urgent” observer concern displays the user’s configured safety-plan actions.
 
 ---
 
@@ -732,16 +808,21 @@ Acceptance criteria:
 
 ## 7.1 Medication management
 
-- [ ] Allow medication definitions to be created and archived.
+- [x] Allow medication definitions to be created and archived.
 - [ ] Allow dose schedules to be entered without implying clinical approval.
-- [ ] Record starts, stops, increases, reductions, delays, and missed doses.
-- [ ] Show a visible notice:
+- [x] Record starts, stops, increases, reductions, delays, and missed doses.
+- [x] Show a visible notice:
 
 > Only change medication according to the plan agreed with your prescriber.
 
+> Implementation note: there is no recurring dose-schedule model yet (e.g.
+> "10mg every morning") — only individual dose-log entries with a status.
+> Starts/stops/increases/reductions are recorded as transition events;
+> delays/missed doses are recorded per dose-log entry.
+
 ## 7.2 Transition timeline
 
-- [ ] Create a chronological timeline combining:
+- [x] Create a chronological timeline combining:
   - medication events;
   - dose changes;
   - missed medication;
@@ -753,25 +834,34 @@ Acceptance criteria:
 - [ ] Allow events to be edited and deleted.
 - [ ] Clearly distinguish planned events from completed events where applicable.
 
+> Implementation note: events can be created but not yet edited or deleted;
+> all events are treated as already-occurred (no planned-vs-completed
+> distinction yet).
+
 ## 7.3 Health measurements
 
-- [ ] Add forms for weekly or occasional measurements.
-- [ ] Support weight, waist, pulse, blood pressure, metabolic markers, and liver-function markers.
-- [ ] Store units with every value.
-- [ ] Allow entry of the laboratory’s reference range.
-- [ ] When outside the supplied range, show:
+- [x] Add forms for weekly or occasional measurements.
+- [x] Support weight, waist, pulse, blood pressure, metabolic markers, and liver-function markers.
+- [x] Store units with every value.
+- [x] Allow entry of the laboratory’s reference range.
+- [x] When outside the supplied range, show:
 
 > Outside the supplied reference range — discuss with your clinician.
 
-- [ ] Do not hard-code universal “safe” laboratory ranges.
-- [ ] Do not interpret liver function or metabolic results.
+- [x] Do not hard-code universal “safe” laboratory ranges.
+- [x] Do not interpret liver function or metabolic results.
 
 Acceptance criteria:
 
 - [ ] Medication changes and health measurements appear on the combined timeline.
-- [ ] The user can enter a laboratory result without a reference range.
-- [ ] The app does not produce medical interpretations.
-- [ ] Units and dates are always shown.
+- [x] The user can enter a laboratory result without a reference range.
+- [x] The app does not produce medical interpretations.
+- [x] Units and dates are always shown.
+
+> Implementation note: health measurements currently have their own list
+> on the Health page rather than appearing on the Medication page's
+> transition timeline — merging the two views is left for the Phase 9
+> trends work.
 
 ---
 

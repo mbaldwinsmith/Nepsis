@@ -1,0 +1,155 @@
+import { SegmentedControl } from '../../components/SegmentedControl'
+import { TextField } from '../../components/TextField'
+import type {
+  SocialCommitment,
+  CommitmentOutcome,
+  CommitmentReason,
+} from '../../data/schemas'
+import { formatIsoDateForDisplay } from '../../utils/date'
+
+interface Props {
+  commitment: SocialCommitment
+  onUpdate: (commitment: SocialCommitment) => void
+}
+
+const outcomeButtons: { value: CommitmentOutcome; label: string }[] = [
+  { value: 'attended', label: 'Attended' },
+  { value: 'attendedBriefly', label: 'Attended briefly' },
+  { value: 'postponed', label: 'Postponed' },
+  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'didNotAttend', label: 'Did not attend' },
+]
+
+const reasonOptions: { value: CommitmentReason; label: string }[] = [
+  { value: 'distress', label: 'Distress' },
+  { value: 'lowEnergy', label: 'Low energy' },
+  { value: 'anxiety', label: 'Anxiety' },
+  { value: 'overwhelmed', label: 'Overwhelmed' },
+  { value: 'irritability', label: 'Irritability' },
+  { value: 'physicalIllness', label: 'Physical illness' },
+  { value: 'schedulingIssue', label: 'Scheduling issue' },
+  { value: 'healthyBoundary', label: 'Healthy boundary' },
+  { value: 'other', label: 'Other' },
+]
+
+const detailOutcomes: CommitmentOutcome[] = ['postponed', 'cancelled', 'didNotAttend']
+
+export function CommitmentCard({ commitment, onUpdate }: Props) {
+  const needsDetail = detailOutcomes.includes(commitment.outcome)
+
+  function setOutcome(outcome: CommitmentOutcome) {
+    onUpdate({
+      ...commitment,
+      outcome,
+      reasons: detailOutcomes.includes(outcome) ? commitment.reasons : undefined,
+      notice: detailOutcomes.includes(outcome) ? commitment.notice : undefined,
+      afterEffect: detailOutcomes.includes(outcome) ? commitment.afterEffect : undefined,
+    })
+  }
+
+  function toggleReason(reason: CommitmentReason) {
+    const current = commitment.reasons ?? []
+    const next = current.includes(reason)
+      ? current.filter((r) => r !== reason)
+      : [...current, reason]
+    onUpdate({ ...commitment, reasons: next.length ? next : undefined })
+  }
+
+  return (
+    <div className="card stack">
+      <div>
+        <strong>{commitment.title || commitment.type}</strong>
+        <p className="hint" style={{ margin: 0 }}>
+          {formatIsoDateForDisplay(commitment.plannedDate)} · {commitment.type} ·{' '}
+          {commitment.importance}
+        </p>
+      </div>
+
+      <div className="segmented" role="group" aria-label="Outcome">
+        {outcomeButtons.map((btn) => (
+          <button
+            key={btn.value}
+            type="button"
+            className="btn"
+            style={
+              commitment.outcome === btn.value
+                ? {
+                    background: 'var(--color-accent)',
+                    color: 'var(--color-accent-contrast)',
+                  }
+                : undefined
+            }
+            onClick={() => setOutcome(btn.value)}
+          >
+            {btn.label}
+          </button>
+        ))}
+      </div>
+
+      {needsDetail && (
+        <div className="stack">
+          {commitment.reasons?.includes('healthyBoundary') && (
+            <p className="hint">
+              A healthy boundary — this is not shown as an adverse pattern.
+            </p>
+          )}
+          <p className="hint">
+            Cancelling plans may be a sign that things feel harder right now.
+          </p>
+          <fieldset className="field" style={{ border: 'none', padding: 0, margin: 0 }}>
+            <legend style={{ fontWeight: 600 }}>Reason (select any that apply)</legend>
+            <div className="stack">
+              {reasonOptions.map((r) => (
+                <label
+                  key={r.value}
+                  style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={(commitment.reasons ?? []).includes(r.value)}
+                    onChange={() => toggleReason(r.value)}
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                  {r.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <SegmentedControl
+            legend="Notice given"
+            name={`notice-${commitment.id}`}
+            options={[
+              { value: 'early', label: 'Early' },
+              { value: 'sameDay', label: 'Same day' },
+              { value: 'veryLate', label: 'Very late' },
+              { value: 'none', label: 'None' },
+            ]}
+            value={commitment.notice}
+            onChange={(notice) => onUpdate({ ...commitment, notice })}
+          />
+          <SegmentedControl
+            legend="After-effect"
+            name={`aftereffect-${commitment.id}`}
+            options={[
+              { value: 'relieved', label: 'Relieved' },
+              { value: 'disappointed', label: 'Disappointed' },
+              { value: 'ashamed', label: 'Ashamed' },
+              { value: 'neutral', label: 'Neutral' },
+              {
+                value: 'gladIProtectedMyCapacity',
+                label: 'Glad I protected my capacity',
+              },
+            ]}
+            value={commitment.afterEffect}
+            onChange={(afterEffect) => onUpdate({ ...commitment, afterEffect })}
+          />
+          <TextField
+            label="Optional factual note"
+            value={commitment.note ?? ''}
+            onChange={(note) => onUpdate({ ...commitment, note: note || undefined })}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
