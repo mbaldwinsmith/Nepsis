@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { dailyCheckInRepository, socialCommitmentRepository } from '../data/repositories'
 import type { DailyCheckIn, SocialCommitment } from '../data/schemas'
+import { AlertCard } from '../components/AlertCard'
+import { evaluateEnabledRules, type AlertTrigger } from '../rules/alertEngine'
 import { formatIsoDateForDisplay, todayIsoDate } from '../utils/date'
 
 export function HomePage() {
   const [todayCheckIn, setTodayCheckIn] = useState<DailyCheckIn | undefined>()
   const [upcoming, setUpcoming] = useState<SocialCommitment[]>([])
+  const [triggers, setTriggers] = useState<AlertTrigger[]>([])
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -14,12 +18,18 @@ export function HomePage() {
     Promise.all([
       dailyCheckInRepository.getByDate(today),
       socialCommitmentRepository.listUpcoming(today),
-    ]).then(([checkIn, commitments]) => {
+      evaluateEnabledRules(today),
+    ]).then(([checkIn, commitments, alertTriggers]) => {
       setTodayCheckIn(checkIn)
       setUpcoming(commitments)
+      setTriggers(alertTriggers)
       setLoading(false)
     })
   }, [])
+
+  const visibleTriggers = triggers.filter(
+    (t) => !dismissed.has(`${t.ruleId}-${t.dateRangeStart}-${t.dateRangeEnd}`),
+  )
 
   return (
     <div className="page stack">
@@ -36,6 +46,25 @@ export function HomePage() {
 
       {!loading && (
         <>
+          {visibleTriggers.length > 0 && (
+            <section className="stack">
+              <h2 style={{ fontSize: '1rem' }}>Worth reviewing</h2>
+              {visibleTriggers.map((trigger) => (
+                <AlertCard
+                  key={`${trigger.ruleId}-${trigger.dateRangeStart}-${trigger.dateRangeEnd}`}
+                  trigger={trigger}
+                  onDismiss={() =>
+                    setDismissed((prev) =>
+                      new Set(prev).add(
+                        `${trigger.ruleId}-${trigger.dateRangeStart}-${trigger.dateRangeEnd}`,
+                      ),
+                    )
+                  }
+                />
+              ))}
+            </section>
+          )}
+
           <section className="card">
             <h2 style={{ fontSize: '1rem' }}>Today</h2>
             <p style={{ margin: 0 }}>

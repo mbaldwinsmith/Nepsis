@@ -8,7 +8,9 @@ import {
   type MedicationEntry,
   type TransitionEvent,
   type HealthMeasurement,
+  type PersonalBaseline,
 } from './schemas'
+import { SINGLETON_BASELINE_ID } from './repositories/personalBaselineRepository'
 
 /**
  * Realistic but entirely fictional development fixtures. Never seed the
@@ -134,10 +136,33 @@ function buildCheckIns(): DailyCheckIn[] {
         foodPreoccupationOrCravings: 2,
       },
       mood: { lowMood: 1, energy: 2 },
+      alcohol: { unitsConsumed: 3, context: 'social', perceivedEffect: 'neutral' },
     }),
   )
 
   return entries
+}
+
+function buildBaseline(): PersonalBaseline {
+  return {
+    id: SINGLETON_BASELINE_ID,
+    schemaVersion: SCHEMA_VERSION,
+    usualSleepDurationMinutes: 440,
+    usualSleepQuality: 3,
+    usualLunchtimeNapNeed: 1,
+    usualWeeklyAlcoholUnits: 4,
+    usualSocialActivity: 2,
+    usualSocialDrive: 0,
+    usualAppetite: 2,
+    usualSatiety: 3,
+    usualEnergy: 2,
+    usualLowMood: 1,
+    usualElevatedMood: 0,
+    comparisonWindowDays: 14,
+    baselineStartDate: daysAgoIso(13),
+    baselineEndDate: daysAgoIso(10),
+    notes: 'Derived from a stable four-day stretch — fictional development data.',
+  }
 }
 
 function buildCommitments(): SocialCommitment[] {
@@ -329,6 +354,7 @@ export async function loadSeedData(): Promise<void> {
   const observerEntries = buildObserverEntries()
   const { definition, entries: medicationEntries, events } = buildMedication()
   const measurements = buildHealthMeasurements()
+  const baseline = buildBaseline()
 
   await db.transaction(
     'rw',
@@ -340,6 +366,7 @@ export async function loadSeedData(): Promise<void> {
       db.medicationEntries,
       db.transitionEvents,
       db.healthMeasurements,
+      db.personalBaselines,
     ],
     async () => {
       await db.dailyCheckIns.bulkPut(checkIns)
@@ -349,6 +376,7 @@ export async function loadSeedData(): Promise<void> {
       await db.medicationEntries.bulkPut(medicationEntries)
       await db.transitionEvents.bulkPut(events)
       await db.healthMeasurements.bulkPut(measurements)
+      await db.personalBaselines.put(baseline)
     },
   )
 }

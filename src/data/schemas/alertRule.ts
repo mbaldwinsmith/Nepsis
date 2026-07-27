@@ -5,27 +5,34 @@ export const alertSeveritySchema = z.enum(['review', 'act'])
 export const alertRuleSourceSchema = z.enum(['default', 'userCreated'])
 
 /**
- * A single transparent, inspectable condition. The rule engine (Phase 8) evaluates
- * these against recorded observations; this schema only defines their shape so the
- * evidence shown to the user is always traceable back to a plain description.
+ * Which built-in evaluator (src/rules/ruleTypes.ts) this rule instance runs.
+ * The condition logic itself lives in code, keyed by this id; only the
+ * label, severity, lookback, thresholds ("params"), and action text are
+ * user-editable data, so every rule stays deterministic and auditable.
  */
-export const alertConditionSchema = z.object({
-  id: id(),
-  description: z.string().trim().min(1).max(300),
-  metric: z.string().trim().min(1).max(120),
-  comparator: z.enum(['gte', 'lte', 'gt', 'lt', 'eq']),
-  threshold: z.number(),
-})
+export const ruleTypeSchema = z.enum([
+  'reducedSleepPlusActivation',
+  'daytimeAlertnessChange',
+  'possibleLowEnergyPattern',
+  'socialActivationPattern',
+  'withdrawalPattern',
+  'essentialCommitmentMissed',
+  'alcoholPatternChange',
+  'restlessnessReview',
+  'compulsiveUrgeReview',
+  'observerConcern',
+])
 
 export const alertRuleSchema = z.object({
   id: id(),
   schemaVersion: z.literal(SCHEMA_VERSION),
+  ruleType: ruleTypeSchema,
   label: z.string().trim().min(1).max(160),
   description: optionalText(500),
   enabled: z.boolean(),
   severity: alertSeveritySchema,
   lookbackDays: z.number().int().positive(),
-  conditions: z.array(alertConditionSchema).min(1),
+  params: z.record(z.string(), z.number()),
   actionText: z.string().trim().min(1).max(500),
   source: alertRuleSourceSchema,
   ruleVersion: z.number().int().positive(),
@@ -34,4 +41,5 @@ export const alertRuleSchema = z.object({
 })
 
 export type AlertRule = z.infer<typeof alertRuleSchema>
-export type AlertCondition = z.infer<typeof alertConditionSchema>
+export type RuleType = z.infer<typeof ruleTypeSchema>
+export type AlertSeverity = z.infer<typeof alertSeveritySchema>

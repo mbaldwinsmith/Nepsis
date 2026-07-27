@@ -11,7 +11,11 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm run preview -- --port 4173',
+    // Runs against the Vite dev server (not the production preview build)
+    // so dev-only affordances such as the Settings "Load seed data" action
+    // are available to e2e tests. `npm run build` covers production-build
+    // acceptance separately.
+    command: 'npm run dev -- --port 4173 --strictPort',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
