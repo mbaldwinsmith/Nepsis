@@ -19,6 +19,13 @@ export function isNextCalendarDay(a: string, b: string): boolean {
   return daysBetween(a, b) === 1
 }
 
+/** Every ISO date from `start` to `end`, inclusive. */
+export function enumerateDates(start: string, end: string): string[] {
+  const count = daysBetween(start, end)
+  if (count < 0) return []
+  return Array.from({ length: count + 1 }, (_, i) => addDays(start, i))
+}
+
 /**
  * Groups items into runs of calendar-consecutive dates where `predicate`
  * holds. A missing day (no item for that date, or predicate false) breaks

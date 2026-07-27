@@ -1018,6 +1018,17 @@ Primary action:
 
 Do not overload the screen with charts.
 
+> Implementation note: Home now shows the medication-transition day
+> (derived from the earliest `medicationStarted` transition event — no
+> new schema field), last night's sleep, the existing Phase 8 review
+> cards, and the single highest-priority recent pattern card (linking to
+> `/trends`) — zero charts, per "do not overload the screen with charts".
+> "Next planned measurement" is not implemented: there is no
+> planned/scheduled-measurement concept anywhere in the domain model
+> (`HealthMeasurement` only records measurements already taken), and
+> adding one would be speculative infrastructure ahead of an actual
+> need — deferred rather than invented for this box alone.
+
 ## 9.2 Trend charts
 
 Create selectable, accessible charts for:
@@ -1039,13 +1050,25 @@ Create selectable, accessible charts for:
 - cancellations;
 - weight.
 
-- [ ] Show no more than three metrics at once.
-- [ ] Default to sleep, energy, and appetite or another clearly documented trio.
-- [ ] Include a table or textual summary for screen readers.
-- [ ] Mark medication and transition events on charts.
-- [ ] Allow seven-day, thirty-day, and custom ranges.
-- [ ] Do not interpolate across missing days.
-- [ ] Show baseline bands only when a baseline exists.
+- [x] Show no more than three metrics at once.
+- [x] Default to sleep, energy, and appetite or another clearly documented trio.
+- [x] Include a table or textual summary for screen readers.
+- [x] Mark medication and transition events on charts.
+- [x] Allow seven-day, thirty-day, and custom ranges.
+- [x] Do not interpolate across missing days.
+- [x] Show baseline bands only when a baseline exists.
+
+> Implementation note: charts are hand-rolled SVG (`src/components
+> /TrendChart.tsx`) — no charting library. Each metric plots on its own
+> normalized scale (metrics share no common unit), distinguished by
+> colour, stroke-dasharray, and a text-labelled legend (never colour
+> alone); a gap in a series breaks its line into a separate path rather
+> than interpolating; a collapsible data table underneath is the
+> non-visual equivalent, always present in the DOM. The alcohol-units
+> baseline is a documented daily approximation (`usualWeeklyAlcoholUnits
+> / 7`) since the recorded baseline is a weekly total; metrics with no
+> corresponding `PersonalBaseline` field (mental speed, irritability,
+> inner restlessness, cancellations, weight) have no band by design.
 
 ## 9.3 Pattern cards
 
@@ -1059,12 +1082,32 @@ Create transparent summaries such as:
 
 Each card must link to the underlying records.
 
+> Implementation note: `src/features/trends/patternCards.ts` implements
+> the three example patterns generically: a baseline-comparison card
+> (checked across every metric with a recorded baseline, surfacing the
+> strongest single deviation rather than one card per metric, to stay
+> calm and uncluttered), a meaningful/essential-cancellation summary
+> (linking to `/commitments`), and an appetite/satiety divergence card
+> (either direction — increased appetite with reduced satiety, or the
+> reverse, comparing first-half vs. second-half window averages). Cards
+> link to the relevant feature's list page rather than a specific
+> record, since there is no per-day historical detail view yet for
+> check-ins.
+
 Acceptance criteria:
 
-- [ ] Charts remain readable on mobile.
-- [ ] Every visual trend has a non-visual equivalent.
-- [ ] Self, observer, commitment, medication, and health data can be distinguished.
-- [ ] Pattern cards state facts, not diagnoses or causal claims.
+- [x] Charts remain readable on mobile.
+- [x] Every visual trend has a non-visual equivalent.
+- [x] Self, observer, commitment, medication, and health data can be distinguished.
+- [x] Pattern cards state facts, not diagnoses or causal claims.
+
+> Implementation note: "self, observer, commitment, medication, and
+> health data can be distinguished" is satisfied by the app as a whole —
+> observer entries already carry a distinct visual treatment (Phase 6)
+> and the rule engine already labels evidence by source (Phase 8); none
+> of the three Trends pattern cards currently draw on observer data
+> specifically, which is a reasonable gap given the three chosen example
+> patterns rather than a missing distinction mechanism.
 
 ---
 
