@@ -1,8 +1,7 @@
 import type { DailyCheckIn, RuleType, SocialCommitment } from '../data/schemas'
-import { consecutiveRuns } from './dateWindows'
+import { consecutiveRuns } from '../utils/dateWindows'
+import { isDistressRelated } from '../utils/distressReasons'
 import type { Evidence, RuleContext, RuleEvaluation, RuleTypeDefinition } from './types'
-
-const DISTRESS_REASONS = ['distress', 'anxiety', 'lowEnergy', 'overwhelmed'] as const
 
 function isNum(v: number | undefined): v is number {
   return typeof v === 'number'
@@ -205,7 +204,7 @@ function distressRelatedCancellations(
     (c) =>
       (c.importance === 'meaningful' || c.importance === 'essential') &&
       ['postponed', 'cancelled', 'didNotAttend'].includes(c.outcome) &&
-      (c.reasons ?? []).some((r) => (DISTRESS_REASONS as readonly string[]).includes(r)),
+      isDistressRelated(c.reasons),
   )
 }
 
@@ -234,7 +233,7 @@ function evaluateEssentialCommitmentMissed(context: RuleContext): RuleEvaluation
     (c) =>
       c.importance === 'essential' &&
       ['cancelled', 'didNotAttend'].includes(c.outcome) &&
-      (c.reasons ?? []).some((r) => (DISTRESS_REASONS as readonly string[]).includes(r)),
+      isDistressRelated(c.reasons),
   )
   if (matches.length === 0) return notTriggered
 

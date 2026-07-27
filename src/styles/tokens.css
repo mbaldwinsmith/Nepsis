@@ -15,6 +15,10 @@
   --color-success-bg: #e7efe6;
   --color-success-text: #33502f;
 
+  --color-series-1: #3a5a6b;
+  --color-series-2: #a05a2c;
+  --color-series-3: #4f7d4a;
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -57,6 +61,10 @@
     --color-review-bg: #362d16;
     --color-success-bg: #223326;
     --color-success-text: #b7d3ae;
+
+    --color-series-1: #7fa8bb;
+    --color-series-2: #d99a63;
+    --color-series-3: #8fbf87;
   }
 }
 

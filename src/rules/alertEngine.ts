@@ -7,7 +7,7 @@ import {
 } from '../data/repositories'
 import type { AlertSeverity } from '../data/schemas'
 import { todayIsoDate } from '../utils/date'
-import { addDays } from './dateWindows'
+import { addDays } from '../utils/dateWindows'
 import { resolveParams } from './params'
 import { getRuleTypeDefinition } from './ruleTypes'
 import type { Evidence } from './types'
