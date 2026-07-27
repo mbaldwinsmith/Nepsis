@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test('loads the app, completes a check-in, and reflects it on the home screen', async ({
   page,
 }) => {
-  await page.goto('/')
+  await page.goto('/#/')
   await expect(page.getByRole('heading', { name: 'Nepsis' })).toBeVisible()
 
   await page.getByRole('link', { name: /Start daily check-in/i }).click()
@@ -50,7 +50,7 @@ test('all primary routes render without console errors', async ({ page }) => {
     '/settings/rules',
     '/more',
   ]) {
-    await page.goto(path)
+    await page.goto(`/#${path}`)
     await expect(page.locator('body')).toBeVisible()
   }
 
@@ -61,7 +61,7 @@ test('check-in form is usable at 320px width without horizontal scroll', async (
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 720 })
-  await page.goto('/check-in')
+  await page.goto('/#/check-in')
   const hasHorizontalScroll = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
   )

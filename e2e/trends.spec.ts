@@ -3,11 +3,11 @@ import { test, expect } from '@playwright/test'
 test('trends page shows the default metric trio, pattern cards, and enforces the 3-metric limit', async ({
   page,
 }) => {
-  await page.goto('/settings')
+  await page.goto('/#/settings')
   await page.getByRole('button', { name: 'Load seed data' }).click()
   await expect(page.getByText('Fictional seed data loaded')).toBeVisible()
 
-  await page.goto('/trends')
+  await page.goto('/#/trends')
   await expect(page.getByRole('img', { name: /Trend chart for/ })).toBeVisible()
   await expect(page.getByText('View data as a table')).toBeVisible()
 
@@ -30,18 +30,18 @@ test('trends page shows the default metric trio, pattern cards, and enforces the
   const cancellationCard = page.getByText(/You cancelled \d+ meaningful commitment/)
   await expect(cancellationCard).toBeVisible()
   await cancellationCard.click()
-  await expect(page).toHaveURL(/\/commitments$/)
+  await expect(page).toHaveURL(/#\/commitments$/)
 })
 
 test('trends chart is usable at 320px width without horizontal scroll', async ({
   page,
 }) => {
-  await page.goto('/settings')
+  await page.goto('/#/settings')
   await page.getByRole('button', { name: 'Load seed data' }).click()
   await expect(page.getByText('Fictional seed data loaded')).toBeVisible()
 
   await page.setViewportSize({ width: 320, height: 720 })
-  await page.goto('/trends')
+  await page.goto('/#/trends')
   await expect(page.getByRole('img', { name: /Trend chart for/ })).toBeVisible()
 
   const hasHorizontalScroll = await page.evaluate(

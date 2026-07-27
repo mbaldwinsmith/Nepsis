@@ -21,7 +21,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleReload = () => {
     this.setState({ error: null })
-    window.location.assign('/')
+    window.location.assign(import.meta.env.BASE_URL)
   }
 
   render() {
