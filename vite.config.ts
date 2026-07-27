@@ -15,7 +15,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
         id: base,
@@ -63,6 +63,6 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: true,
-    exclude: ['node_modules/**', 'dist/**', 'e2e/**'],
+    exclude: ['node_modules/**', 'dist/**', 'e2e/**', 'e2e-offline/**'],
   },
 })

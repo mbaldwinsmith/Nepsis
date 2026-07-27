@@ -11,6 +11,7 @@ import { SafetyPlanPage } from '../features/safety-plan/SafetyPlanPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { RulesPage } from '../features/rules/RulesPage'
 import { DataManagementPage } from '../features/data-management/DataManagementPage'
+import { InstallHelpPage } from '../features/install/InstallHelpPage'
 
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },
@@ -24,5 +25,6 @@ export const routes: RouteObject[] = [
   { path: '/settings', element: <SettingsPage /> },
   { path: '/settings/rules', element: <RulesPage /> },
   { path: '/settings/data', element: <DataManagementPage /> },
+  { path: '/settings/install', element: <InstallHelpPage /> },
   { path: '/more', element: <MorePage /> },
 ]
