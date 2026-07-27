@@ -21,6 +21,16 @@ export function SettingsPage() {
         </Link>
       </section>
 
+      <section className="card">
+        <h2 style={{ fontSize: '1rem' }}>Export, backup, and restore</h2>
+        <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
+          Export CSV files, create an encrypted backup, or restore from one.
+        </p>
+        <Link to="/settings/data" className="btn" style={{ textDecoration: 'none' }}>
+          Manage data
+        </Link>
+      </section>
+
       <section className="card stack">
         <h2>Privacy</h2>
         <p>

@@ -10,6 +10,7 @@ import { TrendsPage } from '../features/trends/TrendsPage'
 import { SafetyPlanPage } from '../features/safety-plan/SafetyPlanPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { RulesPage } from '../features/rules/RulesPage'
+import { DataManagementPage } from '../features/data-management/DataManagementPage'
 
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },
@@ -22,5 +23,6 @@ export const routes: RouteObject[] = [
   { path: '/safety-plan', element: <SafetyPlanPage /> },
   { path: '/settings', element: <SettingsPage /> },
   { path: '/settings/rules', element: <RulesPage /> },
+  { path: '/settings/data', element: <DataManagementPage /> },
   { path: '/more', element: <MorePage /> },
 ]

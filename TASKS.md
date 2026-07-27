@@ -140,9 +140,9 @@ Acceptance criteria:
 - [x] Add a small notification/toast system for saves, imports, exports, and errors.
 - [x] Add a development-only seed-data utility.
 
-> Implementation note: the toast system currently covers saves and errors
-> (used throughout the feature forms); import/export flows do not exist
-> yet (Phase 10), so there is nothing for them to notify about so far.
+> Implementation note: the toast system covers saves, errors, CSV export,
+> encrypted backup creation, and restore (Phase 10) throughout the feature
+> forms and the data-management page.
 
 Suggested routes:
 
@@ -533,9 +533,9 @@ Fields:
   - unsupported enum values.
 - [x] Preserve future compatibility using a schema version.
 
-> Implementation note: import/restore does not exist yet (Phase 10), so
-> there is nothing to validate on import so far; the schemas are already
-> in place to reuse for that validation when it is built.
+> Implementation note: restore (Phase 10) reuses these same per-entity
+> schemas to validate every record in a backup file before anything is
+> written to IndexedDB — see `src/data/backup/restore.ts`.
 
 ## 2.3 IndexedDB
 
@@ -1115,61 +1115,94 @@ Acceptance criteria:
 
 ## 10.1 CSV export
 
-- [ ] Allow the user to choose:
+- [x] Allow the user to choose:
   - date range;
   - data categories;
   - whether to include free-text notes;
   - whether to include observer labels.
-- [ ] Export separate or clearly namespaced CSV files for:
+- [x] Export separate or clearly namespaced CSV files for:
   - daily check-ins;
   - commitments;
   - observer entries;
   - medications and transition events;
   - health measurements;
   - alerts.
-- [ ] Use ISO dates and explicit units.
-- [ ] Include a data dictionary or README file in the export bundle.
+- [x] Use ISO dates and explicit units.
+- [x] Include a data dictionary or README file in the export bundle.
+
+> Implementation note: "alerts" exports the currently configured review
+> rules (label, severity, lookback, thresholds, enabled state) — Nepsis
+> does not persist a history of past fired alerts (dismissing an alert
+> card is in-memory only), so the data dictionary explicitly documents
+> this file as current configuration, not a log of past reviews. There is
+> no zip bundling dependency: each selected CSV plus the data dictionary
+> downloads as its own browser download from one click (consistent with
+> the earlier decision to avoid a charting library for Phase 9 — avoid
+> dependencies the actual requirement doesn't need).
 
 ## 10.2 Encrypted backup
 
-- [ ] Export a complete versioned JSON backup.
-- [ ] Encrypt the backup using a passphrase-derived key and authenticated encryption.
-- [ ] Use the Web Crypto API through a small, well-tested wrapper.
-- [ ] Store:
+- [x] Export a complete versioned JSON backup.
+- [x] Encrypt the backup using a passphrase-derived key and authenticated encryption.
+- [x] Use the Web Crypto API through a small, well-tested wrapper.
+- [x] Store:
   - schema version;
   - creation time;
   - encryption parameters;
   - encrypted payload;
   - authentication metadata.
-- [ ] Never store the passphrase.
-- [ ] Warn clearly that a forgotten passphrase cannot be recovered.
-- [ ] Do not call the implementation “military-grade”.
+- [x] Never store the passphrase.
+- [x] Warn clearly that a forgotten passphrase cannot be recovered.
+- [x] Do not call the implementation "military-grade".
+
+> Implementation note: PBKDF2-SHA256 (300,000 iterations) derives an
+> AES-256-GCM key; AES-GCM's own authentication tag (appended to the
+> ciphertext by `crypto.subtle.encrypt`) is the "authentication metadata"
+> — there is no separate tag field to store. The backup is a complete dump
+> of all ten tables (including personal baseline, safety plan, and review
+> rules), not just the six CSV-exportable categories, so restore can fully
+> reconstruct app state.
 
 ## 10.3 Restore
 
-- [ ] Validate file type, envelope structure, decryption result, and schema.
-- [ ] Preview record counts before importing.
-- [ ] Offer:
+- [x] Validate file type, envelope structure, decryption result, and schema.
+- [x] Preview record counts before importing.
+- [x] Offer:
   - replace all local data;
   - merge without overwriting;
   - cancel.
-- [ ] Make restore atomic so a failed import does not leave partial data.
-- [ ] Test restore from older supported schema versions.
+- [x] Make restore atomic so a failed import does not leave partial data.
+- [x] Test restore from older supported schema versions.
+
+> Implementation note: every record is validated against its real entity
+> Zod schema before anything is written to IndexedDB, then committed in a
+> single Dexie transaction — so a validation failure never touches the
+> database, and a transaction-level failure rolls back automatically.
+> Only one schema version has ever shipped, so "restore from an older
+> version" is vacuously satisfied today; a real cross-version test should
+> be added the day `SCHEMA_VERSION` first bumps (a future restore
+> unsupported-version case is already tested and rejected with a clear
+> message).
 
 ## 10.4 Delete all data
 
-- [ ] Add a clearly labelled destructive action in Settings.
-- [ ] Require explicit confirmation.
-- [ ] Delete IndexedDB data, cached personal exports if any, and local preferences.
-- [ ] Explain that external files already downloaded cannot be deleted by the app.
+- [x] Add a clearly labelled destructive action in Settings.
+- [x] Require explicit confirmation.
+- [x] Delete IndexedDB data, cached personal exports if any, and local preferences.
+- [x] Explain that external files already downloaded cannot be deleted by the app.
+
+> Implementation note: built in Milestone A (`DeleteAllData.tsx`). There is
+> no `localStorage`/`sessionStorage` use anywhere in the app and no cached
+> export files, so `deleteAllLocalData()` clearing all ten Dexie tables is
+> already complete.
 
 Acceptance criteria:
 
-- [ ] Exported CSV opens cleanly in common spreadsheet software.
-- [ ] Encrypted backups cannot be read as plain JSON.
-- [ ] Correct-passphrase restore recreates the original record counts and content.
-- [ ] Incorrect-passphrase restore fails safely.
-- [ ] Delete-all removes local records.
+- [x] Exported CSV opens cleanly in common spreadsheet software.
+- [x] Encrypted backups cannot be read as plain JSON.
+- [x] Correct-passphrase restore recreates the original record counts and content.
+- [x] Incorrect-passphrase restore fails safely.
+- [x] Delete-all removes local records.
 
 ---
 
