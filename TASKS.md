@@ -894,6 +894,21 @@ Use wording such as:
 - “Your social rhythm differs from your recorded baseline.”
 - “This pattern may be worth reviewing with someone from your support plan.”
 
+> Implementation note: the engine (`src/rules/`) is a set of pure,
+> independently unit-tested evaluator functions keyed by a fixed
+> `ruleType` (one per seed pattern below), each reading only from
+> user-editable `params` (named numeric thresholds) and `lookbackDays` —
+> so every rule stays deterministic and auditable without a generic
+> freeform condition language. `src/rules/alertEngine.ts` wires enabled
+> `AlertRule` records to their evaluator and recorded data (check-ins,
+> commitments, observer entries, baseline) and returns a trigger with
+> rule name, severity, date range, the exact evidence, action text, and
+> rule-version metadata. The Home page (`src/app/HomePage.tsx`) is the
+> visible surface: a "Worth reviewing" section renders one `AlertCard`
+> per trigger, each with a "View safety plan" link and a Dismiss button.
+> Dismiss is in-memory only for this pass (it clears on reload); a
+> persisted dismiss-until-data-changes mechanism is deferred.
+
 ## 8.2 Seed rules
 
 Create editable, disabled-by-default or clearly opt-in seed rules for patterns such as:
@@ -947,21 +962,38 @@ Create editable, disabled-by-default or clearly opt-in seed rules for patterns s
 - one urgent observer entry;
 - or repeated “discuss soon” entries within a selected period.
 
+> Implementation note: all ten seed rules above are implemented in
+> `src/rules/ruleTypes.ts` with sensible default thresholds, inserted
+> disabled (`enabled: false`) the first time the app runs
+> (`ensureDefaultRulesExist()` in `src/rules/defaultRules.ts`, called from
+> `src/app/App.tsx`). They are genuinely opt-in — nothing evaluates until
+> a user enables a rule from Settings → Review rules.
+
 ## 8.3 Configuration
 
-- [ ] Allow every rule to be enabled, disabled, edited, or duplicated.
-- [ ] Allow thresholds and lookback periods to be changed.
-- [ ] Show a plain-language preview of what the rule does.
-- [ ] Record rule-version metadata with generated alerts.
-- [ ] Do not silently change user-configured rules after an app update.
+- [x] Allow every rule to be enabled, disabled, edited, or duplicated.
+- [x] Allow thresholds and lookback periods to be changed.
+- [x] Show a plain-language preview of what the rule does.
+- [x] Record rule-version metadata with generated alerts.
+- [x] Do not silently change user-configured rules after an app update.
+
+> Implementation note: "duplicated" means cloning an existing rule
+> (`RuleCard`'s Duplicate button — new id, `source: userCreated`,
+> `ruleVersion: 1`) as a starting point for a variant with different
+> thresholds; there is no freeform builder for authoring a brand-new
+> condition tree from scratch, which was intentionally out of scope (see
+> TASKS.md "Explicit MVP non-goals" — Nepsis stays a personal tracker, not
+> a clinical rule-authoring platform). Threshold/lookback editing is
+> generic across all ten rule types, driven by each type's `paramSchema`
+> rather than ten bespoke forms (`src/features/rules/RuleCard.tsx`).
 
 Acceptance criteria:
 
-- [ ] Rules are deterministic and unit tested.
-- [ ] Trigger evidence is visible.
-- [ ] Missing values do not trigger a rule unless the rule explicitly checks missing data.
-- [ ] A user can disable all alerts while retaining tracking.
-- [ ] No alert recommends medication changes.
+- [x] Rules are deterministic and unit tested.
+- [x] Trigger evidence is visible.
+- [x] Missing values do not trigger a rule unless the rule explicitly checks missing data.
+- [x] A user can disable all alerts while retaining tracking.
+- [x] No alert recommends medication changes.
 
 ---
 

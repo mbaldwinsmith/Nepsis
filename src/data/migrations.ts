@@ -24,4 +24,15 @@ export const migrationHistory: MigrationNote[] = [
     schemaVersion: 1,
     summary: 'Initial schema: all Phase 2 entities, one table per entity.',
   },
+  {
+    dexieVersion: 1,
+    schemaVersion: 1,
+    summary:
+      'AlertRule shape finalized for the Phase 8 rule engine: the placeholder ' +
+      'generic conditions[] (metric/comparator/threshold) field was replaced ' +
+      'with ruleType (a fixed evaluator id) + params (named numeric ' +
+      'thresholds). No Dexie version bump: the alertRules table has never ' +
+      'held real records under the old shape (no seed data or UI wrote to ' +
+      'it), so there is nothing to migrate.',
+  },
 ]

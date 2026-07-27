@@ -26,9 +26,19 @@ describe('database schema', () => {
     db.close()
   })
 
-  it('records a migration note for every shipped Dexie version', () => {
+  it('orders migration notes non-decreasingly by Dexie version', () => {
+    // Multiple notes may share a dexieVersion (a schema shape finalized
+    // within the same Dexie version, with no table/index change), but
+    // notes must never appear out of order relative to shipped versions.
     const versions = migrationHistory.map((m) => m.dexieVersion)
     expect(versions).toEqual([...versions].sort((a, b) => a - b))
-    expect(new Set(versions).size).toBe(versions.length)
+  })
+
+  it('matches the highest dexieVersion mentioned in migration notes to the live schema', async () => {
+    const highestNoted = Math.max(...migrationHistory.map((m) => m.dexieVersion))
+    const db = new NepsisDatabase(`migration-test-${crypto.randomUUID()}`)
+    await db.open()
+    expect(db.verno).toBe(highestNoted)
+    db.close()
   })
 })

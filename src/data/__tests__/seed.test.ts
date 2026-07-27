@@ -9,6 +9,7 @@ import {
   medicationEntrySchema,
   transitionEventSchema,
   healthMeasurementSchema,
+  personalBaselineSchema,
 } from '../schemas'
 
 beforeEach(async () => {
@@ -19,6 +20,7 @@ beforeEach(async () => {
   await db.medicationEntries.clear()
   await db.transitionEvents.clear()
   await db.healthMeasurements.clear()
+  await db.personalBaselines.clear()
 })
 
 describe('loadSeedData', () => {
@@ -33,6 +35,7 @@ describe('loadSeedData', () => {
       entries,
       events,
       measurements,
+      baseline,
     ] = await Promise.all([
       db.dailyCheckIns.toArray(),
       db.socialCommitments.toArray(),
@@ -41,6 +44,7 @@ describe('loadSeedData', () => {
       db.medicationEntries.toArray(),
       db.transitionEvents.toArray(),
       db.healthMeasurements.toArray(),
+      db.personalBaselines.toArray(),
     ])
 
     for (const record of checkIns)
@@ -57,8 +61,11 @@ describe('loadSeedData', () => {
       expect(transitionEventSchema.safeParse(record).success).toBe(true)
     for (const record of measurements)
       expect(healthMeasurementSchema.safeParse(record).success).toBe(true)
+    for (const record of baseline)
+      expect(personalBaselineSchema.safeParse(record).success).toBe(true)
 
     expect(checkIns.length).toBeGreaterThan(0)
     expect(commitments.length).toBeGreaterThan(0)
+    expect(baseline).toHaveLength(1)
   })
 })

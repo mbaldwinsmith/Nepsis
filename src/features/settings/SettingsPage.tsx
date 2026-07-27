@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useBaseline } from './useBaseline'
 import { BaselineEditor } from './BaselineEditor'
 import { DeleteAllData } from './DeleteAllData'
@@ -9,6 +10,16 @@ export function SettingsPage() {
   return (
     <div className="page stack">
       <h1>Settings</h1>
+
+      <section className="card">
+        <h2 style={{ fontSize: '1rem' }}>Review rules</h2>
+        <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
+          Configure the deterministic, non-diagnostic patterns Nepsis can point out.
+        </p>
+        <Link to="/settings/rules" className="btn" style={{ textDecoration: 'none' }}>
+          Manage review rules
+        </Link>
+      </section>
 
       <section className="card stack">
         <h2>Privacy</h2>

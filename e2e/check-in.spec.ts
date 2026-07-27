@@ -47,6 +47,7 @@ test('all primary routes render without console errors', async ({ page }) => {
     '/trends',
     '/safety-plan',
     '/settings',
+    '/settings/rules',
     '/more',
   ]) {
     await page.goto(path)

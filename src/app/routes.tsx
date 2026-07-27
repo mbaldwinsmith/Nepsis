@@ -9,6 +9,7 @@ import { HealthPage } from '../features/health/HealthPage'
 import { TrendsPage } from '../features/trends/TrendsPage'
 import { SafetyPlanPage } from '../features/safety-plan/SafetyPlanPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
+import { RulesPage } from '../features/rules/RulesPage'
 
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },
@@ -20,5 +21,6 @@ export const routes: RouteObject[] = [
   { path: '/trends', element: <TrendsPage /> },
   { path: '/safety-plan', element: <SafetyPlanPage /> },
   { path: '/settings', element: <SettingsPage /> },
+  { path: '/settings/rules', element: <RulesPage /> },
   { path: '/more', element: <MorePage /> },
 ]
