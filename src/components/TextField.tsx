@@ -5,7 +5,7 @@ interface TextFieldProps {
   value: string
   onChange: (value: string) => void
   hint?: string
-  type?: 'text' | 'date' | 'time' | 'number' | 'datetime-local'
+  type?: 'text' | 'date' | 'time' | 'number' | 'datetime-local' | 'password'
   multiline?: boolean
   min?: number
   step?: number
