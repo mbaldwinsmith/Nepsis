@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, useRoutes } from 'react-router-dom'
+import { HashRouter, useRoutes } from 'react-router-dom'
 import { ErrorBoundary } from '../components/ErrorBoundary'
 import { ToastProvider } from '../components/ToastProvider'
 import { BottomNav } from '../components/BottomNav'
@@ -18,10 +18,10 @@ export default function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <BrowserRouter>
+        <HashRouter>
           <AppRoutes />
           <BottomNav />
-        </BrowserRouter>
+        </HashRouter>
       </ToastProvider>
     </ErrorBoundary>
   )

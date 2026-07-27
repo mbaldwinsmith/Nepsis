@@ -278,6 +278,31 @@ npm run preview
 
 Keep this section aligned with the actual scripts in `package.json`.
 
+### Deploying to GitHub Pages
+
+`.github/workflows/deploy-pages.yml` builds and deploys the app to GitHub
+Pages automatically on every push to `main` (and via manual dispatch).
+
+One-time setup: in the repository's **Settings → Pages**, set **Source** to
+**GitHub Actions**. After that, pushes to `main` publish to
+`https://<owner>.github.io/Nepsis/`.
+
+GitHub Pages serves the app from that `/Nepsis/` subpath rather than the
+domain root, which affects two things already handled for you:
+
+- `vite.config.ts` sets `base: '/Nepsis/'` only when the workflow sets
+  `GITHUB_PAGES=true` before building — local `dev`/`build`/`preview` and
+  tests are unaffected and keep using `/`.
+- The router runs in hash mode (`HashRouter`, so URLs look like
+  `/#/check-in`) because a static host with no server-side rewrite rules
+  can't route arbitrary paths like `/check-in` back to `index.html` on a
+  hard refresh or direct link; the hash portion never leaves the browser,
+  so no server configuration is needed.
+
+To deploy elsewhere (a different static host, a custom domain, or a path
+other than `/Nepsis/`), adjust the `base` value and the `GITHUB_PAGES` env
+var name in `vite.config.ts` and the workflow accordingly.
+
 ## Environment configuration
 
 The local-first MVP should not require secrets or a backend.

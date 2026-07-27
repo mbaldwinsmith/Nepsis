@@ -3,11 +3,11 @@ import { test, expect } from '@playwright/test'
 test('enabling a rule surfaces a review card on Home once seed data matches it', async ({
   page,
 }) => {
-  await page.goto('/settings')
+  await page.goto('/#/settings')
   await page.getByRole('button', { name: 'Load seed data' }).click()
   await expect(page.getByText('Fictional seed data loaded')).toBeVisible()
 
-  await page.goto('/settings/rules')
+  await page.goto('/#/settings/rules')
   const restlessnessCard = page
     .locator('div.card')
     .filter({ hasText: 'Restlessness review' })
@@ -19,7 +19,7 @@ test('enabling a rule surfaces a review card on Home once seed data matches it',
   await enabledCheckbox.click()
   await expect(enabledCheckbox).toBeChecked()
 
-  await page.goto('/')
+  await page.goto('/#/')
   await expect(page.getByText('Worth reviewing')).toBeVisible()
   const homeCard = page
     .locator('div.card')
