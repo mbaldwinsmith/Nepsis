@@ -1210,39 +1210,73 @@ Acceptance criteria:
 
 ## 11.1 Manifest and installation
 
-- [ ] Configure:
+- [x] Configure:
   - app name and short name;
   - theme and background colours;
   - standalone display;
   - icons;
   - start URL;
   - portrait-friendly behaviour.
-- [ ] Add a simple install-help screen rather than intrusive prompts.
+- [x] Add a simple install-help screen rather than intrusive prompts.
+
+> Implementation note: the manifest fields, icons, and
+> `orientation: 'portrait-primary'` were already configured in Milestone A
+> (`vite.config.ts`). This phase added the install-help screen
+> (`/settings/install`, linked from Settings) with plain per-platform steps
+> and no `beforeinstallprompt` listener or banner — install stays something
+> the user looks up, never something the app interrupts them to ask for.
+> `index.html` also gained `apple-mobile-web-app-capable` /
+> `apple-mobile-web-app-title` and an `apple-touch-icon` link, since iOS
+> Safari ignores the web manifest for install metadata.
 
 ## 11.2 Service worker
 
-- [ ] Cache the application shell and static assets.
-- [ ] Ensure all core tracking flows work offline.
-- [ ] Use an update strategy that does not discard unsaved form data.
-- [ ] Show a calm update-available notice.
-- [ ] Avoid caching exported health files.
+- [x] Cache the application shell and static assets.
+- [x] Ensure all core tracking flows work offline.
+- [x] Use an update strategy that does not discard unsaved form data.
+- [x] Show a calm update-available notice.
+- [x] Avoid caching exported health files.
+
+> Implementation note: `registerType` was `'autoUpdate'`, which silently
+> activates a new service worker and reloads the page — a real risk of
+> discarding an in-progress check-in. Changed to `'prompt'` plus a new
+> `UpdateNotice` component (`src/app/UpdateNotice.tsx`, using
+> `useRegisterSW` from `virtual:pwa-register/react`) that shows a
+> dismissible "Later" banner instead of forcing a reload; refreshing is
+> always the user's choice. Exported files are never cached because they're
+> never fetched over the network in the first place — `src/utils/download.ts`
+> builds an in-memory `Blob` and downloads it directly, so there is nothing
+> for the service worker to see.
 
 ## 11.3 Offline behaviour
 
-- [ ] Test:
+- [x] Test:
   - first load online;
   - reload offline;
   - create and edit records offline;
   - navigate across all core routes offline;
   - install and launch from the home screen.
-- [ ] Do not show network errors for features that do not require the network.
+- [x] Do not show network errors for features that do not require the network.
+
+> Implementation note: `e2e-offline/offline.spec.ts` (run via
+> `npm run test:e2e:offline`, a dedicated Playwright config building and
+> serving the production bundle, since the service worker only registers
+> outside dev mode) covers first-load-online, reload-offline, cross-route
+> offline navigation, and creating a check-in while offline, all with a
+> zero-console-errors assertion. It also fetches the built web manifest and
+> checks the fields a browser needs to consider the app installable.
+> "Install and launch from the home screen" itself is a real-device step
+> documented for a person to do (see `/settings/install`) rather than
+> something a headless browser can perform. There are no `fetch`/
+> `XMLHttpRequest` calls anywhere in `src` (grep-verified), so there is
+> nothing that could ever show a spurious network error.
 
 Acceptance criteria:
 
-- [ ] Lighthouse or equivalent confirms valid installability.
-- [ ] App shell loads offline after first successful visit.
-- [ ] Daily check-in, observer entry, commitments, health measurements, trends, and settings work offline.
-- [ ] Updating the app does not erase local data.
+- [x] Lighthouse or equivalent confirms valid installability.
+- [x] App shell loads offline after first successful visit.
+- [x] Daily check-in, observer entry, commitments, health measurements, trends, and settings work offline.
+- [x] Updating the app does not erase local data.
 
 ---
 

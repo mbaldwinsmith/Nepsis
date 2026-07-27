@@ -267,8 +267,13 @@ npm run format
 npm run lint
 npm test
 npm run test:e2e
+npm run test:e2e:offline
 npm run build
 ```
+
+`test:e2e:offline` builds and serves the production bundle (the service
+worker only registers outside dev mode) to verify installability and
+offline behaviour — see Phase 11 in `TASKS.md`.
 
 ### Preview the production build
 

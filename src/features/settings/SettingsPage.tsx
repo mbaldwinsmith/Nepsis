@@ -31,6 +31,16 @@ export function SettingsPage() {
         </Link>
       </section>
 
+      <section className="card">
+        <h2 style={{ fontSize: '1rem' }}>Install Nepsis</h2>
+        <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
+          Add Nepsis to your home screen so it works offline.
+        </p>
+        <Link to="/settings/install" className="btn" style={{ textDecoration: 'none' }}>
+          Install instructions
+        </Link>
+      </section>
+
       <section className="card stack">
         <h2>Privacy</h2>
         <p>

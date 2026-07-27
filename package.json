@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:offline": "playwright test --config=playwright.offline.config.ts",
     "seed:info": "echo 'Load dev seed data from Settings > Developer tools in the running app.'"
   },
   "dependencies": {

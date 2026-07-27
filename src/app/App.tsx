@@ -5,6 +5,7 @@ import { ToastProvider } from '../components/ToastProvider'
 import { BottomNav } from '../components/BottomNav'
 import { ensureDefaultRulesExist } from '../rules/defaultRules'
 import { routes } from './routes'
+import { UpdateNotice } from './UpdateNotice'
 
 function AppRoutes() {
   return useRoutes(routes)
@@ -21,6 +22,7 @@ export default function App() {
         <HashRouter>
           <AppRoutes />
           <BottomNav />
+          <UpdateNotice />
         </HashRouter>
       </ToastProvider>
     </ErrorBoundary>
