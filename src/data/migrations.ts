@@ -35,4 +35,13 @@ export const migrationHistory: MigrationNote[] = [
       'held real records under the old shape (no seed data or UI wrote to ' +
       'it), so there is nothing to migrate.',
   },
+  {
+    dexieVersion: 2,
+    schemaVersion: 1,
+    summary:
+      'Added the appPreferences table (Phase 12): a single device-local ' +
+      'record holding UI preferences such as the privacy curtain toggle. ' +
+      'Deliberately excluded from encrypted backup/restore — it describes ' +
+      "this device's screen behaviour, not portable personal data.",
+  },
 ]

@@ -161,8 +161,11 @@ export function HomePage() {
       )}
 
       <p className="hint">
-        Nepsis is not a diagnostic device and does not replace clinical care. Urgent
-        concerns should follow your existing clinical or crisis plan — see your{' '}
+        Nepsis is not a diagnostic device and does not replace clinical care. A recorded
+        pattern can have many explanations — sleep, illness, life events, medication, or
+        none of these — and does not by itself mean any one cause. Medication changes
+        should only follow the plan agreed with your prescriber. Urgent concerns should
+        follow your existing clinical or crisis plan — see your{' '}
         <Link to="/safety-plan">safety plan</Link>.
       </p>
     </div>

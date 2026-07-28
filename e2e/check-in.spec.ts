@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { BANNED_PHRASES } from '../src/utils/prohibitedWording'
 
 test('loads the app, completes a check-in, and reflects it on the home screen', async ({
   page,
@@ -30,7 +31,13 @@ test('loads the app, completes a check-in, and reflects it on the home screen', 
   ).toBeVisible()
 })
 
-test('all primary routes render without console errors', async ({ page }) => {
+test('all primary routes render without console errors or prohibited wording', async ({
+  page,
+}) => {
+  await page.goto('/#/settings')
+  await page.getByRole('button', { name: 'Load seed data' }).click()
+  await expect(page.getByText('Fictional seed data loaded')).toBeVisible()
+
   const errors: string[] = []
   page.on('pageerror', (err) => errors.push(err.message))
   page.on('console', (msg) => {
@@ -49,10 +56,19 @@ test('all primary routes render without console errors', async ({ page }) => {
     '/settings',
     '/settings/rules',
     '/settings/data',
+    '/settings/install',
+    '/settings/privacy',
     '/more',
   ]) {
     await page.goto(`/#${path}`)
     await expect(page.locator('body')).toBeVisible()
+
+    const bodyText = (await page.locator('body').innerText()).toLowerCase()
+    for (const phrase of BANNED_PHRASES) {
+      expect(bodyText, `${path} contains prohibited wording: "${phrase}"`).not.toContain(
+        phrase,
+      )
+    }
   }
 
   expect(errors).toEqual([])
