@@ -12,6 +12,7 @@ import { SettingsPage } from '../features/settings/SettingsPage'
 import { RulesPage } from '../features/rules/RulesPage'
 import { DataManagementPage } from '../features/data-management/DataManagementPage'
 import { InstallHelpPage } from '../features/install/InstallHelpPage'
+import { PrivacyPage } from '../features/privacy/PrivacyPage'
 
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },
@@ -26,5 +27,6 @@ export const routes: RouteObject[] = [
   { path: '/settings/rules', element: <RulesPage /> },
   { path: '/settings/data', element: <DataManagementPage /> },
   { path: '/settings/install', element: <InstallHelpPage /> },
+  { path: '/settings/privacy', element: <PrivacyPage /> },
   { path: '/more', element: <MorePage /> },
 ]

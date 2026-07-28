@@ -1,27 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { buildDefaultRuleRecords } from '../defaultRules'
 import { ruleTypeDefinitions } from '../ruleTypes'
 import { resolveParams } from '../params'
-
-const BANNED_PHRASES = [
-  'you are manic',
-  'you are becoming hypomanic',
-  'this is akathisia',
-  'your medication is causing',
-  'manic',
-  'hypomanic',
-  'akathisia',
-  'addicted',
-]
-
-function assertNoBannedPhrase(text: string, label: string) {
-  const lower = text.toLowerCase()
-  for (const phrase of BANNED_PHRASES) {
-    expect(lower, `${label} contains prohibited wording: "${phrase}"`).not.toContain(
-      phrase,
-    )
-  }
-}
+import { assertNoBannedPhrase } from '../../utils/prohibitedWording'
 
 describe('rule engine wording', () => {
   it('never uses prohibited diagnostic or medication-causation wording in default action text', () => {

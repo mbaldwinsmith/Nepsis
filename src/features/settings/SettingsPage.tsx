@@ -3,9 +3,12 @@ import { useBaseline } from './useBaseline'
 import { BaselineEditor } from './BaselineEditor'
 import { DeleteAllData } from './DeleteAllData'
 import { DevSeedAction } from './DevSeedAction'
+import { usePrivacyCurtain } from './usePrivacyCurtain'
+import { CheckboxField } from '../../components/CheckboxField'
 
 export function SettingsPage() {
   const { baseline, loading, save } = useBaseline()
+  const { enabled: privacyCurtainEnabled, setPrivacyCurtainEnabled } = usePrivacyCurtain()
 
   return (
     <div className="page stack">
@@ -41,18 +44,24 @@ export function SettingsPage() {
         </Link>
       </section>
 
+      <section className="card">
+        <h2 style={{ fontSize: '1rem' }}>Privacy</h2>
+        <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
+          What Nepsis stores, where, and what export, backup, and deletion actually do.
+        </p>
+        <Link to="/settings/privacy" className="btn" style={{ textDecoration: 'none' }}>
+          Read the privacy summary
+        </Link>
+      </section>
+
       <section className="card stack">
-        <h2>Privacy</h2>
-        <p>
-          Nepsis stores your data locally in this browser using IndexedDB. There is no
-          account, no cloud sync, and no analytics. Exporting or backing up data creates a
-          file you control. Deleting local data removes what is stored in this browser,
-          but cannot delete files you have already exported.
-        </p>
-        <p className="hint">
-          Local browser storage is not a replacement for device encryption or a secure
-          screen lock.
-        </p>
+        <h2 style={{ fontSize: '1rem' }}>Privacy curtain</h2>
+        <CheckboxField
+          label="Show a cover screen when returning to Nepsis"
+          checked={privacyCurtainEnabled}
+          onChange={setPrivacyCurtainEnabled}
+          hint="A plain screen appears after switching away and back, so a glance doesn't reveal your data. This is not a password or encryption — anyone can tap through it."
+        />
       </section>
 
       {!loading && <BaselineEditor baseline={baseline} onSave={save} />}

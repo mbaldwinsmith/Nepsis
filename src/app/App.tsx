@@ -6,6 +6,7 @@ import { BottomNav } from '../components/BottomNav'
 import { ensureDefaultRulesExist } from '../rules/defaultRules'
 import { routes } from './routes'
 import { UpdateNotice } from './UpdateNotice'
+import { PrivacyCurtain } from './PrivacyCurtain'
 
 function AppRoutes() {
   return useRoutes(routes)
@@ -20,9 +21,12 @@ export default function App() {
     <ErrorBoundary>
       <ToastProvider>
         <HashRouter>
-          <AppRoutes />
+          <main>
+            <AppRoutes />
+          </main>
           <BottomNav />
           <UpdateNotice />
+          <PrivacyCurtain />
         </HashRouter>
       </ToastProvider>
     </ErrorBoundary>

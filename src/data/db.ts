@@ -10,6 +10,7 @@ import type {
   PersonalBaseline,
   SafetyPlan,
   AlertRule,
+  AppPreference,
 } from './schemas'
 
 export class NepsisDatabase extends Dexie {
@@ -23,6 +24,7 @@ export class NepsisDatabase extends Dexie {
   personalBaselines!: Table<PersonalBaseline, string>
   safetyPlans!: Table<SafetyPlan, string>
   alertRules!: Table<AlertRule, string>
+  appPreferences!: Table<AppPreference, string>
 
   constructor(name = 'nepsis') {
     super(name)
@@ -41,6 +43,12 @@ export class NepsisDatabase extends Dexie {
       personalBaselines: 'id',
       safetyPlans: 'id',
       alertRules: 'id, source',
+    })
+
+    // Schema version 2: added appPreferences (device-local UI preferences,
+    // e.g. the privacy curtain toggle — see migrations.ts).
+    this.version(2).stores({
+      appPreferences: 'id',
     })
   }
 }
@@ -62,6 +70,7 @@ export async function deleteAllLocalData(): Promise<void> {
       db.personalBaselines,
       db.safetyPlans,
       db.alertRules,
+      db.appPreferences,
     ],
     async () => {
       await Promise.all([
@@ -75,6 +84,7 @@ export async function deleteAllLocalData(): Promise<void> {
         db.personalBaselines.clear(),
         db.safetyPlans.clear(),
         db.alertRules.clear(),
+        db.appPreferences.clear(),
       ])
     },
   )

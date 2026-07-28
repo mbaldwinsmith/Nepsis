@@ -2,22 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { enumerateDates } from '../../../utils/dateWindows'
 import { buildPatternCards, type PatternCardContext } from '../patternCards'
 import { baseline, checkIn, commitment } from './fixtures'
-
-const BANNED_PHRASES = [
-  'manic',
-  'hypomanic',
-  'akathisia',
-  'your medication is causing',
-  'you are',
-]
+import { assertNoBannedPhrase as sharedAssertNoBannedPhrase } from '../../../utils/prohibitedWording'
 
 function assertNoBannedPhrase(text: string) {
-  const lower = text.toLowerCase()
-  for (const phrase of BANNED_PHRASES) {
-    expect(lower, `card text contains prohibited wording: "${phrase}"`).not.toContain(
-      phrase,
-    )
-  }
+  sharedAssertNoBannedPhrase(text, 'card text')
 }
 
 function context(partial: Partial<PatternCardContext>): PatternCardContext {
