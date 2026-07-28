@@ -9,6 +9,10 @@ export function ObserverPage() {
   return (
     <div className="page stack">
       <h1>Observer check-in</h1>
+      <p className="hint">
+        Observer entries are kept separate from your own check-ins, so each perspective
+        stays distinct rather than being blended into one score.
+      </p>
       <ObserverForm onCreate={create} />
       {loading ? (
         <p>Loading…</p>

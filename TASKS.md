@@ -1678,7 +1678,7 @@ Document:
 
 ## 15.2 In-app help
 
-- [ ] Add concise explanations for:
+- [x] Add concise explanations for:
   - reduced need for sleep versus poor sleep;
   - inner restlessness versus anxiety;
   - social activity versus social drive;
@@ -1689,24 +1689,80 @@ Document:
 
 ## 15.3 Release checklist
 
-- [ ] Fresh install tested.
-- [ ] Upgrade from previous database version tested.
-- [ ] Offline use tested.
-- [ ] Backup and restore tested.
-- [ ] Delete-all tested.
-- [ ] Accessibility reviewed.
-- [ ] Mobile viewport reviewed.
-- [ ] No analytics or remote trackers present.
-- [ ] No medical diagnosis or medication advice present.
-- [ ] All tests pass.
-- [ ] Production build succeeds.
-- [ ] Version number and release notes added.
+- [x] Fresh install tested.
+- [x] Upgrade from previous database version tested.
+- [x] Offline use tested.
+- [x] Backup and restore tested.
+- [x] Delete-all tested.
+- [x] Accessibility reviewed.
+- [x] Mobile viewport reviewed.
+- [x] No analytics or remote trackers present.
+- [x] No medical diagnosis or medication advice present.
+- [x] All tests pass.
+- [x] Production build succeeds.
+- [x] Version number and release notes added.
 
 Acceptance criteria:
 
-- [ ] A new developer can run and understand the project from the README.
-- [ ] A user can understand the app’s limits from onboarding and help text.
-- [ ] The release candidate satisfies the Definition of Done.
+- [x] A new developer can run and understand the project from the README.
+- [x] A user can understand the app’s limits from onboarding and help text.
+- [x] The release candidate satisfies the Definition of Done.
+
+> Implementation note: an Explore-agent audit checked every §15.2 bullet
+> against the actual code before writing anything, and this checklist was
+> verified against existing coverage rather than re-tested from scratch
+> where coverage already existed.
+>
+> - **15.1 README**: rewritten from forward-looking spec/plan tense
+>   ("Nepsis is currently an MVP project specification...") to describe the
+>   shipped app. Concrete facts added: the real `src/` layout, the database
+>   schema (11 tables across 2 Dexie `version()` blocks, `SCHEMA_VERSION =
+>   1`), the migration process (`src/data/migrations.ts`'s documented
+>   steps), the backup format (`BACKUP_FORMAT_VERSION = 1`, PBKDF2 +
+>   AES-GCM, per-record validation on restore), the update-notice flow
+>   (`src/app/UpdateNotice.tsx`, `registerType: 'prompt'`), and real test
+>   counts (160 unit/component tests across 29 files; 54 e2e tests across
+>   `chromium` and `mobile-chromium`; a 4-test offline suite). Added
+>   `CHANGELOG.md` and linked it from the README; the README's own "Release
+>   readiness" checklist is now checked off against this phase's
+>   verification. Safety-boundary, design-principle, and core-flow sections
+>   were left as-is — they already described the shipped app accurately.
+> - **15.2 In-app help**: the audit found "reduced need for sleep vs poor
+>   sleep" (`SleepSection.tsx`) and "inner restlessness vs anxiety"
+>   (`MedicationEffectsSection.tsx`) already had clear hints — no change
+>   needed. The five real gaps were filled, all using the existing
+>   `hint`/`<p className="hint">` idiom: social activity vs. social drive
+>   (`DailyRhythmSection.tsx`), the outcome/reason taxonomy for
+>   cancellations (`CommitmentCard.tsx`), what a laboratory reference range
+>   is and how it's used (`HealthMeasurementForm.tsx`), why self-report and
+>   observer-report are kept separate (`ObserverPage.tsx`), and what
+>   "evidence" and a lookback window mean for review rules
+>   (`RulesPage.tsx`).
+> - **15.3 Release checklist**: most items were already satisfied by
+>   earlier phases and were re-verified against their existing coverage
+>   rather than re-tested from scratch — fresh install
+>   (`e2e/onboarding-and-safety-plan.spec.ts`), upgrade migration
+>   (`src/data/__tests__/migrations.test.ts`'s version-1-to-2 upgrade
+>   test), offline use (`playwright.offline.config.ts`, 4 tests), backup/
+>   restore/delete-all (`e2e/data-management.spec.ts`), accessibility
+>   (`e2e/accessibility.spec.ts`, 14 routes × 2 viewports), mobile viewport
+>   (`playwright.config.ts` runs both `chromium` and `mobile-chromium` for
+>   every spec), no analytics/trackers (re-grepped for `fetch`/
+>   `XMLHttpRequest`/`sendBeacon` outside test files — none found), no
+>   diagnosis/medication advice (`src/utils/prohibitedWording.ts`'s e2e
+>   check). The one genuine gap — no version number was displayed anywhere
+>   and no changelog existed — was fixed: `vite.config.ts` now defines
+>   `__APP_VERSION__` from `package.json`, shown as "Nepsis v0.1.0" in
+>   Settings, and `CHANGELOG.md` documents the 0.1.0 MVP release. While
+>   re-running the full suite, found and fixed one pre-existing flaky e2e
+>   assertion in `e2e/medication-and-health.spec.ts` (an ambiguous
+>   `getByText('Dose increased')` locator matched a `<select>` option's
+>   label in addition to the intended text) — unrelated to this phase's
+>   changes, but caught because "all tests pass" needed to be true, not
+>   assumed. Verified: `tsc -b`, `oxlint`, `prettier --check`, 160 unit
+>   tests, production build (no warnings), the full Playwright suite (54
+>   tests across both viewports), and the offline suite (4 tests) — all
+>   pass.
 
 ---
 

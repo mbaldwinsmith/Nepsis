@@ -97,6 +97,7 @@ export function DailyRhythmSection({
         onChange={(v) => onChangeSocial({ ...social, activityAmount: v })}
         minLabel="None"
         maxLabel="A great deal"
+        hint="How much social contact you actually had today."
       />
       <ScaleInput
         legend="Social drive"
@@ -107,6 +108,7 @@ export function DailyRhythmSection({
         onChange={(v) => onChangeSocial({ ...social, socialDrive: v })}
         minLabel="Much less driven"
         maxLabel="Much more driven"
+        hint="How driven or pulled toward social contact you felt — this can differ from how much you actually did."
       />
       <SegmentedControl
         legend="Effect of social contact"

@@ -65,6 +65,10 @@ export function CommitmentCard({ commitment, onUpdate }: Props) {
         </p>
       </div>
 
+      <p className="hint" style={{ margin: 0 }}>
+        "Postponed", "Cancelled", and "Did not attend" ask for an optional reason;
+        "Attended" and "Attended briefly" don't.
+      </p>
       <div className="segmented" role="group" aria-label="Outcome">
         {outcomeButtons.map((btn) => (
           <button
@@ -98,6 +102,10 @@ export function CommitmentCard({ commitment, onUpdate }: Props) {
           </p>
           <fieldset className="field" style={{ border: 'none', padding: 0, margin: 0 }}>
             <legend style={{ fontWeight: 600 }}>Reason (select any that apply)</legend>
+            <p className="hint">
+              Choosing "Healthy boundary" tells Nepsis this wasn't distress-related, so it
+              isn't grouped with the other reasons when looking for patterns.
+            </p>
             <div className="stack">
               {reasonOptions.map((r) => (
                 <label

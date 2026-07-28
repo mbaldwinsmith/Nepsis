@@ -112,7 +112,7 @@ export function HealthMeasurementForm({ onCreate }: Props) {
         type="number"
         value={referenceMin}
         onChange={setReferenceMin}
-        hint="From the laboratory report, if supplied."
+        hint="The normal band your laboratory reports alongside a result, if supplied. Nepsis only shows whether your value falls inside or outside it — it does not interpret what that means."
       />
       <TextField
         label="Reference maximum (optional)"

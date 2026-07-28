@@ -12,6 +12,11 @@ export function RulesPage() {
         diagnoses a condition or recommends a medication change — it only points out a
         recorded pattern worth reviewing with your support plan.
       </p>
+      <p className="hint">
+        Each rule looks back over a fixed number of days and lists the exact dated records
+        — the "evidence" — that caused it to trigger. Nothing is inferred beyond what you
+        or an observer recorded.
+      </p>
       {loading ? (
         <p>Loading…</p>
       ) : (
