@@ -29,6 +29,61 @@ test('loads the app, completes a check-in, and reflects it on the home screen', 
   await expect(
     page.getByRole('link', { name: /Update today.?s check-in/i }),
   ).toBeVisible()
+
+  // Re-open today's check-in, change a value, and confirm the edit persists.
+  await page.getByRole('link', { name: /Update today.?s check-in/i }).click()
+  await expect(page.getByRole('heading', { name: 'Daily check-in' })).toBeVisible()
+  await expect(
+    page.getByRole('radiogroup', { name: 'Sleep quality' }).getByRole('radio', {
+      name: 'Sleep quality: 3',
+    }),
+  ).toBeChecked()
+
+  await page
+    .getByRole('radiogroup', { name: 'Sleep quality' })
+    .getByText('4', { exact: true })
+    .click()
+  await page.getByRole('button', { name: 'Update check-in' }).click()
+  await expect(page.getByText('Check-in saved')).toBeVisible()
+
+  await page.reload()
+  await expect(
+    page.getByRole('radiogroup', { name: 'Sleep quality' }).getByRole('radio', {
+      name: 'Sleep quality: 4',
+    }),
+  ).toBeChecked()
+})
+
+test('records a lunchtime nap and alcohol units, including their conditional fields', async ({
+  page,
+}) => {
+  await page.goto('/#/check-in')
+
+  await page.getByLabel('Nap taken').click()
+  await expect(page.getByLabel('Nap duration (minutes)')).toBeVisible()
+  await page.getByLabel('Nap duration (minutes)').fill('30')
+  await page
+    .getByRole('radiogroup', { name: 'Nap after-effect' })
+    .getByText('Refreshed', { exact: true })
+    .click()
+
+  await page.getByLabel('Units consumed').fill('2')
+  await expect(page.getByRole('radiogroup', { name: 'Context' })).toBeVisible()
+  await page
+    .getByRole('radiogroup', { name: 'Context' })
+    .getByText('Social', { exact: true })
+    .click()
+  await page
+    .getByRole('radiogroup', { name: 'Perceived effect' })
+    .getByText('Neutral', { exact: true })
+    .click()
+
+  await page.getByRole('button', { name: 'Save check-in' }).click()
+  await expect(page.getByText('Check-in saved')).toBeVisible()
+
+  await page.reload()
+  await expect(page.getByLabel('Nap duration (minutes)')).toHaveValue('30')
+  await expect(page.getByLabel('Units consumed')).toHaveValue('2')
 })
 
 test('all primary routes render without console errors or prohibited wording', async ({
