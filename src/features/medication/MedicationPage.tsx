@@ -11,6 +11,7 @@ export function MedicationPage() {
     loading,
     createDefinition,
     archiveDefinition,
+    unarchiveDefinition,
     createEntry,
     createEvent,
   } = useMedications()
@@ -30,6 +31,7 @@ export function MedicationPage() {
         definitions={definitions}
         onCreate={createDefinition}
         onArchive={archiveDefinition}
+        onUnarchive={unarchiveDefinition}
       />
       <DoseLog definitions={definitions} entries={entries} onCreate={createEntry} />
       <TransitionTimeline events={events} onCreate={createEvent} />

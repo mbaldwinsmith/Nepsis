@@ -27,6 +27,9 @@ test.beforeEach(async ({ page }) => {
 for (const path of CORE_ROUTES) {
   test(`no automated accessibility violations on ${path}`, async ({ page }) => {
     await page.goto(`/#${path}`)
+    // Secondary routes are lazy-loaded; wait past the Suspense fallback (a
+    // plain "Loading…" with no landmark heading) before scanning.
+    await expect(page.locator('h1')).toBeVisible()
     const results = await new AxeBuilder({ page }).analyze()
     expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
   })

@@ -1,18 +1,20 @@
 import type { RouteObject } from 'react-router-dom'
 import { HomePage } from './HomePage'
-import { MorePage } from './MorePage'
 import { CheckInPage } from '../features/check-in/CheckInPage'
-import { ObserverPage } from '../features/observers/ObserverPage'
-import { CommitmentsPage } from '../features/commitments/CommitmentsPage'
-import { MedicationPage } from '../features/medication/MedicationPage'
-import { HealthPage } from '../features/health/HealthPage'
-import { TrendsPage } from '../features/trends/TrendsPage'
-import { SafetyPlanPage } from '../features/safety-plan/SafetyPlanPage'
-import { SettingsPage } from '../features/settings/SettingsPage'
-import { RulesPage } from '../features/rules/RulesPage'
-import { DataManagementPage } from '../features/data-management/DataManagementPage'
-import { InstallHelpPage } from '../features/install/InstallHelpPage'
-import { PrivacyPage } from '../features/privacy/PrivacyPage'
+import {
+  MorePage,
+  ObserverPage,
+  CommitmentsPage,
+  MedicationPage,
+  HealthPage,
+  TrendsPage,
+  SafetyPlanPage,
+  SettingsPage,
+  RulesPage,
+  DataManagementPage,
+  InstallHelpPage,
+  PrivacyPage,
+} from './lazyPages'
 
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },

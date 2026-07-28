@@ -61,6 +61,15 @@ export function useMedications() {
     await refresh()
   }
 
+  async function unarchiveDefinition(definition: MedicationDefinition) {
+    await medicationDefinitionRepository.update({
+      ...definition,
+      active: true,
+      updatedAt: nowIsoDateTime(),
+    })
+    await refresh()
+  }
+
   async function createEntry(input: Omit<MedicationEntry, 'id' | 'schemaVersion'>) {
     await medicationEntryRepository.create({
       ...input,
@@ -86,6 +95,7 @@ export function useMedications() {
     loading,
     createDefinition,
     archiveDefinition,
+    unarchiveDefinition,
     createEntry,
     createEvent,
   }

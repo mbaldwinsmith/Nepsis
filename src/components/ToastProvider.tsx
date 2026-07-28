@@ -1,10 +1,11 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react'
-import { ToastContext, type ToastKind } from './toastContext'
+import { ToastContext, type ToastAction, type ToastKind } from './toastContext'
 
 interface Toast {
   id: string
   message: string
   kind: ToastKind
+  action?: ToastAction
 }
 
 const AUTO_DISMISS_MS = 4000
@@ -13,13 +14,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
   const nextId = useRef(0)
 
-  const showToast = useCallback((message: string, kind: ToastKind = 'info') => {
-    const toastId = String(nextId.current++)
-    setToasts((current) => [...current, { id: toastId, message, kind }])
-    window.setTimeout(() => {
-      setToasts((current) => current.filter((toast) => toast.id !== toastId))
-    }, AUTO_DISMISS_MS)
-  }, [])
+  const showToast = useCallback(
+    (message: string, kind: ToastKind = 'info', action?: ToastAction) => {
+      const toastId = String(nextId.current++)
+      setToasts((current) => [...current, { id: toastId, message, kind, action }])
+      window.setTimeout(() => {
+        setToasts((current) => current.filter((toast) => toast.id !== toastId))
+      }, AUTO_DISMISS_MS)
+    },
+    [],
+  )
 
   return (
     <ToastContext.Provider value={{ showToast }}>
@@ -44,6 +48,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={toast.id}
             className="card"
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 'var(--space-3)',
               background:
                 toast.kind === 'error'
                   ? 'var(--color-urgent-bg)'
@@ -53,7 +61,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               color: toast.kind === 'error' ? 'var(--color-urgent)' : 'inherit',
             }}
           >
-            {toast.message}
+            <span>{toast.message}</span>
+            {toast.action && (
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  toast.action?.onClick()
+                  setToasts((current) => current.filter((t) => t.id !== toast.id))
+                }}
+              >
+                {toast.action.label}
+              </button>
+            )}
           </div>
         ))}
       </div>

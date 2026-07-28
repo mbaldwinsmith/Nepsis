@@ -16,6 +16,7 @@ function numberField(value: number | undefined) {
 
 export function BaselineEditor({ baseline, onSave }: Props) {
   const [draft, setDraft] = useState(baseline)
+  const [saving, setSaving] = useState(false)
   const { showToast } = useToast()
 
   function setNumber(key: keyof BaselineDraft, raw: string) {
@@ -24,8 +25,15 @@ export function BaselineEditor({ baseline, onSave }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    await onSave(draft)
-    showToast('Baseline saved', 'success')
+    setSaving(true)
+    try {
+      await onSave(draft)
+      showToast('Baseline saved', 'success')
+    } catch {
+      showToast('Could not save your baseline. Please try again.', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -95,8 +103,8 @@ export function BaselineEditor({ baseline, onSave }: Props) {
         value={draft.notes ?? ''}
         onChange={(v) => setDraft({ ...draft, notes: v || undefined })}
       />
-      <button type="submit" className="btn btn-primary">
-        Save baseline
+      <button type="submit" className="btn btn-primary" disabled={saving}>
+        {saving ? 'Saving…' : 'Save baseline'}
       </button>
     </form>
   )

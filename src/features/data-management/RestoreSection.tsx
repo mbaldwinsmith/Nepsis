@@ -66,7 +66,11 @@ export function RestoreSection() {
       })
     } catch (err) {
       setPreview(null)
-      setError(err instanceof Error ? err.message : 'Could not read this backup file.')
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not read this backup file. Check that it is a Nepsis backup and that the passphrase is correct.',
+      )
     } finally {
       setBusy(false)
     }
@@ -82,7 +86,7 @@ export function RestoreSection() {
       setPassphrase('')
       setPreview(null)
     } catch {
-      setError('Restore failed before any data was changed. Please try again.')
+      setError("The restore didn't complete, and no data was changed. Please try again.")
     } finally {
       setBusy(false)
     }

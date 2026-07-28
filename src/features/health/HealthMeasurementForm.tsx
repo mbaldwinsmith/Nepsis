@@ -38,6 +38,20 @@ const typeOptions: {
   { value: 'triglycerides', label: 'Triglycerides', defaultUnit: 'mmol/L' },
 ]
 
+const plainLanguageHints: Partial<Record<HealthMeasurementType, string>> = {
+  alt: 'A liver-function marker.',
+  ast: 'A liver-function marker.',
+  alp: 'A liver-function marker.',
+  ggt: 'A liver-function marker, sometimes checked alongside alcohol use.',
+  bilirubin: 'A liver-function marker.',
+  hba1c: 'Average blood glucose over the past two to three months.',
+  glucose: 'Blood sugar level at the time of the test.',
+  totalCholesterol: 'A blood-fat marker.',
+  hdl: 'A blood-fat marker, often called "good" cholesterol.',
+  ldl: 'A blood-fat marker, often called "bad" cholesterol.',
+  triglycerides: 'A blood-fat marker.',
+}
+
 export function HealthMeasurementForm({ onCreate }: Props) {
   const [type, setType] = useState<HealthMeasurementType>('weight')
   const [value, setValue] = useState('')
@@ -45,6 +59,7 @@ export function HealthMeasurementForm({ onCreate }: Props) {
   const [referenceMin, setReferenceMin] = useState('')
   const [referenceMax, setReferenceMax] = useState('')
   const [notes, setNotes] = useState('')
+  const [saving, setSaving] = useState(false)
 
   function handleTypeChange(next: HealthMeasurementType) {
     setType(next)
@@ -55,6 +70,7 @@ export function HealthMeasurementForm({ onCreate }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (value === '') return
+    setSaving(true)
     await onCreate({
       type,
       value: Number(value),
@@ -64,6 +80,7 @@ export function HealthMeasurementForm({ onCreate }: Props) {
       referenceMax: referenceMax === '' ? undefined : Number(referenceMax),
       notes: notes.trim() || undefined,
     })
+    setSaving(false)
     setValue('')
     setReferenceMin('')
     setReferenceMax('')
@@ -86,6 +103,7 @@ export function HealthMeasurementForm({ onCreate }: Props) {
             </option>
           ))}
         </select>
+        {plainLanguageHints[type] && <p className="hint">{plainLanguageHints[type]}</p>}
       </div>
       <TextField label="Value" type="number" value={value} onChange={setValue} required />
       <TextField label="Unit" value={unit} onChange={setUnit} required />
@@ -103,8 +121,8 @@ export function HealthMeasurementForm({ onCreate }: Props) {
         onChange={setReferenceMax}
       />
       <TextField label="Notes (optional)" multiline value={notes} onChange={setNotes} />
-      <button type="submit" className="btn btn-primary">
-        Save measurement
+      <button type="submit" className="btn btn-primary" disabled={saving}>
+        {saving ? 'Saving…' : 'Save measurement'}
       </button>
     </form>
   )
