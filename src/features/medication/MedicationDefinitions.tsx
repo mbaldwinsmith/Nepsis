@@ -10,16 +10,25 @@ interface Props {
     notes?: string
   }) => Promise<void>
   onArchive: (definition: MedicationDefinition) => Promise<void>
+  onUnarchive: (definition: MedicationDefinition) => Promise<void>
 }
 
-export function MedicationDefinitions({ definitions, onCreate, onArchive }: Props) {
+export function MedicationDefinitions({
+  definitions,
+  onCreate,
+  onArchive,
+  onUnarchive,
+}: Props) {
   const [name, setName] = useState('')
   const [formulation, setFormulation] = useState('')
+  const [saving, setSaving] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) return
+    setSaving(true)
     await onCreate({ name: name.trim(), formulation: formulation.trim() || undefined })
+    setSaving(false)
     setName('')
     setFormulation('')
   }
@@ -48,9 +57,13 @@ export function MedicationDefinitions({ definitions, onCreate, onArchive }: Prop
                 {d.name}
                 {d.formulation ? ` (${d.formulation})` : ''} {!d.active && '· archived'}
               </span>
-              {d.active && (
+              {d.active ? (
                 <button type="button" className="btn" onClick={() => onArchive(d)}>
                   Archive
+                </button>
+              ) : (
+                <button type="button" className="btn" onClick={() => onUnarchive(d)}>
+                  Unarchive
                 </button>
               )}
             </li>
@@ -64,8 +77,8 @@ export function MedicationDefinitions({ definitions, onCreate, onArchive }: Prop
           value={formulation}
           onChange={setFormulation}
         />
-        <button type="submit" className="btn btn-primary">
-          Add medication
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving…' : 'Add medication'}
         </button>
       </form>
     </section>

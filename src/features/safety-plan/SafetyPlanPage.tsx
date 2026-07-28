@@ -67,12 +67,20 @@ export function SafetyPlanPage() {
   const { plan, loading, save } = useSafetyPlan()
   const { showToast } = useToast()
   const [draft, setDraft] = useState(plan)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => setDraft(plan), [plan])
 
   async function handleSave() {
-    await save(draft)
-    showToast('Safety plan saved', 'success')
+    setSaving(true)
+    try {
+      await save(draft)
+      showToast('Safety plan saved', 'success')
+    } catch {
+      showToast('Could not save your safety plan. Please try again.', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (loading) {
@@ -139,8 +147,13 @@ export function SafetyPlanPage() {
         />
       </section>
 
-      <button type="button" className="btn btn-primary" onClick={handleSave}>
-        Save safety plan
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={handleSave}
+        disabled={saving}
+      >
+        {saving ? 'Saving…' : 'Save safety plan'}
       </button>
     </div>
   )

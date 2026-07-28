@@ -1,6 +1,7 @@
 import { useCommitments } from './useCommitments'
 import { CommitmentCard } from './CommitmentCard'
 import { NewCommitmentForm } from './NewCommitmentForm'
+import { ShowMoreList } from '../../components/ShowMoreList'
 
 export function CommitmentsPage() {
   const { commitments, loading, create, update } = useCommitments()
@@ -14,15 +15,13 @@ export function CommitmentsPage() {
       ) : commitments.length === 0 ? (
         <p className="hint">Nothing planned yet. Add a commitment above.</p>
       ) : (
-        <div className="stack">
-          {commitments.map((commitment) => (
-            <CommitmentCard
-              key={commitment.id}
-              commitment={commitment}
-              onUpdate={update}
-            />
-          ))}
-        </div>
+        <ShowMoreList
+          items={commitments}
+          getKey={(commitment) => commitment.id}
+          renderItem={(commitment) => (
+            <CommitmentCard commitment={commitment} onUpdate={update} />
+          )}
+        />
       )}
     </div>
   )

@@ -22,10 +22,12 @@ export function DoseLog({ definitions, entries, onCreate }: Props) {
   const [status, setStatus] = useState<MedicationEntryStatus>('taken')
   const [doseTaken, setDoseTaken] = useState('')
   const [unit, setUnit] = useState('')
+  const [saving, setSaving] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!medicationDefinitionId) return
+    setSaving(true)
     await onCreate({
       medicationDefinitionId,
       takenAt: nowIsoDateTime(),
@@ -33,6 +35,7 @@ export function DoseLog({ definitions, entries, onCreate }: Props) {
       doseTaken: doseTaken === '' ? undefined : Number(doseTaken),
       unit: unit || undefined,
     })
+    setSaving(false)
     setDoseTaken('')
   }
 
@@ -82,11 +85,13 @@ export function DoseLog({ definitions, entries, onCreate }: Props) {
           onChange={setDoseTaken}
         />
         <TextField label="Unit (optional)" value={unit} onChange={setUnit} />
-        <button type="submit" className="btn btn-primary">
-          Log dose
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving…' : 'Log dose'}
         </button>
       </form>
-      {entries.length > 0 && (
+      {entries.length === 0 ? (
+        <p className="hint">No doses logged yet.</p>
+      ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0 }} className="stack">
           {entries.slice(0, 5).map((entry) => {
             const def = definitions.find((d) => d.id === entry.medicationDefinitionId)

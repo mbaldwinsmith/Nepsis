@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { HashRouter, useRoutes } from 'react-router-dom'
 import { ErrorBoundary } from '../components/ErrorBoundary'
 import { ToastProvider } from '../components/ToastProvider'
@@ -21,8 +21,10 @@ export default function App() {
     <ErrorBoundary>
       <ToastProvider>
         <HashRouter>
-          <main>
-            <AppRoutes />
+          <main style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+            <Suspense fallback={<p className="page">Loading…</p>}>
+              <AppRoutes />
+            </Suspense>
           </main>
           <BottomNav />
           <UpdateNotice />

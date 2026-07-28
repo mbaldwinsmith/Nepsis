@@ -7,6 +7,7 @@ import {
 } from '../data/repositories'
 import type { DailyCheckIn, SocialCommitment } from '../data/schemas'
 import { AlertCard } from '../components/AlertCard'
+import { useToast } from '../components/toastContext'
 import { evaluateEnabledRules, type AlertTrigger } from '../rules/alertEngine'
 import { PatternCard } from '../features/trends/PatternCard'
 import { usePatternCards } from '../features/trends/usePatternCards'
@@ -23,6 +24,7 @@ export function HomePage() {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const { cards: patternCards } = usePatternCards(addDays(today, -6), today)
+  const { showToast } = useToast()
 
   useEffect(() => {
     Promise.all([
@@ -85,19 +87,27 @@ export function HomePage() {
           {visibleTriggers.length > 0 && (
             <section className="stack">
               <h2 style={{ fontSize: '1rem' }}>Worth reviewing</h2>
-              {visibleTriggers.map((trigger) => (
-                <AlertCard
-                  key={`${trigger.ruleId}-${trigger.dateRangeStart}-${trigger.dateRangeEnd}`}
-                  trigger={trigger}
-                  onDismiss={() =>
-                    setDismissed((prev) =>
-                      new Set(prev).add(
-                        `${trigger.ruleId}-${trigger.dateRangeStart}-${trigger.dateRangeEnd}`,
-                      ),
-                    )
-                  }
-                />
-              ))}
+              {visibleTriggers.map((trigger) => {
+                const triggerKey = `${trigger.ruleId}-${trigger.dateRangeStart}-${trigger.dateRangeEnd}`
+                return (
+                  <AlertCard
+                    key={triggerKey}
+                    trigger={trigger}
+                    onDismiss={() => {
+                      setDismissed((prev) => new Set(prev).add(triggerKey))
+                      showToast('Dismissed', 'info', {
+                        label: 'Undo',
+                        onClick: () =>
+                          setDismissed((prev) => {
+                            const next = new Set(prev)
+                            next.delete(triggerKey)
+                            return next
+                          }),
+                      })
+                    }}
+                  />
+                )
+              })}
             </section>
           )}
 

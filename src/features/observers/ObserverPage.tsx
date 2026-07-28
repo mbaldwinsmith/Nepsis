@@ -1,6 +1,7 @@
 import { useObserverEntries } from './useObserverEntries'
 import { ObserverForm } from './ObserverForm'
 import { ObserverEntryCard } from './ObserverEntryCard'
+import { ShowMoreList } from '../../components/ShowMoreList'
 
 export function ObserverPage() {
   const { entries, loading, create } = useObserverEntries()
@@ -14,11 +15,11 @@ export function ObserverPage() {
       ) : entries.length === 0 ? (
         <p className="hint">No observer entries recorded yet.</p>
       ) : (
-        <div className="stack">
-          {entries.map((entry) => (
-            <ObserverEntryCard key={entry.id} entry={entry} />
-          ))}
-        </div>
+        <ShowMoreList
+          items={entries}
+          getKey={(entry) => entry.id}
+          renderItem={(entry) => <ObserverEntryCard entry={entry} />}
+        />
       )}
     </div>
   )

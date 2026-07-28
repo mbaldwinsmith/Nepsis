@@ -1506,14 +1506,14 @@ Acceptance criteria:
 
 ## 14.1 Interaction polish
 
-- [ ] Reduce unnecessary taps.
-- [ ] Preserve scroll and form state.
-- [ ] Add sensible defaults without guessing health values.
-- [ ] Ensure save actions feel immediate.
-- [ ] Prevent duplicate submissions.
-- [ ] Add undo where safe for non-destructive actions.
-- [ ] Make empty states useful and calm.
-- [ ] Ensure errors explain how to recover.
+- [x] Reduce unnecessary taps.
+- [x] Preserve scroll and form state.
+- [x] Add sensible defaults without guessing health values.
+- [x] Ensure save actions feel immediate.
+- [x] Prevent duplicate submissions.
+- [x] Add undo where safe for non-destructive actions.
+- [x] Make empty states useful and calm.
+- [x] Ensure errors explain how to recover.
 
 ## 14.2 Copy polish
 
@@ -1542,35 +1542,117 @@ Avoid:
 - “flaky”
 - “unreliable”
 
-- [ ] Keep helper text concise.
-- [ ] Explain clinical-looking terms in plain language.
-- [ ] Use UK spelling and date conventions in the UI while preserving ISO dates in exports.
-- [ ] Ensure all headings and labels are consistent.
+- [x] Keep helper text concise.
+- [x] Explain clinical-looking terms in plain language.
+- [x] Use UK spelling and date conventions in the UI while preserving ISO dates in exports.
+- [x] Ensure all headings and labels are consistent.
 
 ## 14.3 Visual polish
 
-- [ ] Refine spacing and hierarchy.
-- [ ] Ensure charts are not visually dominant.
-- [ ] Use icons sparingly and always with labels where meaning matters.
-- [ ] Check light and dark modes if both are supported.
-- [ ] Verify safe-area insets on modern phones.
-- [ ] Verify installed-app appearance.
+- [x] Refine spacing and hierarchy.
+- [x] Ensure charts are not visually dominant.
+- [x] Use icons sparingly and always with labels where meaning matters.
+- [x] Check light and dark modes if both are supported.
+- [x] Verify safe-area insets on modern phones.
+- [x] Verify installed-app appearance.
 
 ## 14.4 Performance
 
-- [ ] Audit bundle size.
-- [ ] Lazy-load secondary routes where beneficial.
-- [ ] Avoid rendering full datasets unnecessarily.
-- [ ] Keep home screen and check-in interactions responsive with at least five years of daily records.
-- [ ] Test IndexedDB query performance on representative data.
+- [x] Audit bundle size.
+- [x] Lazy-load secondary routes where beneficial.
+- [x] Avoid rendering full datasets unnecessarily.
+- [x] Keep home screen and check-in interactions responsive with at least five years of daily records.
+- [x] Test IndexedDB query performance on representative data.
 
 Acceptance criteria:
 
-- [ ] Daily check-in remains quick and calm.
-- [ ] No visible layout shift on core screens.
-- [ ] No console warnings or errors.
-- [ ] App remains responsive with a large local dataset.
-- [ ] User-facing wording is compassionate and non-diagnostic.
+- [x] Daily check-in remains quick and calm.
+- [x] No visible layout shift on core screens.
+- [x] No console warnings or errors.
+- [x] App remains responsive with a large local dataset.
+- [x] User-facing wording is compassionate and non-diagnostic.
+
+> Implementation note: an Explore-agent audit checked every §14.1–14.3
+> bullet against the actual code before touching anything, to avoid
+> re-polishing what was already solid. Most bullets were already satisfied
+> incidentally by earlier phases — sensible non-guessed defaults, immediate
+> save feedback on most forms, calm empty states on most list pages, UK
+> spelling/dates throughout, consistent sentence-case headings, icons
+> always labelled, modest charts, and dark-mode CSS tokens on every
+> surface. The real, concrete gaps found (and fixed here) were:
+>
+> - **Duplicate-submission guards (§14.1)**: roughly half of the app's
+>   save-triggering forms already had a `saving` state + `disabled` button
+>   (`CheckInPage`, `ObserverForm`, `NewCommitmentForm`,
+>   `RestoreSection`, `CreateBackupSection`); the other half didn't. Added
+>   the same guard to `HealthMeasurementForm.tsx`, `DoseLog.tsx`,
+>   `MedicationDefinitions.tsx`, `BaselineEditor.tsx`, and
+>   `SafetyPlanPage.tsx`.
+> - **Silent save failures (§14.1)**: `BaselineEditor.tsx` and
+>   `SafetyPlanPage.tsx` had no try/catch around their save calls at all.
+>   Both now show an error toast via the existing `useToast()` pattern
+>   ("Could not save your baseline/safety plan. Please try again.") on
+>   failure, matching every other form's error handling.
+> - **Undo for safe, non-destructive actions (§14.1)**: medication archive
+>   (`MedicationDefinitions.tsx`/`useMedications.ts`) gained a matching
+>   "Unarchive" button (new `unarchiveDefinition`). Alert dismissal
+>   (`HomePage.tsx`) now shows an "Undo" toast action instead of vanishing
+>   permanently — `ToastProvider`/`toastContext.ts` were extended with an
+>   optional `{ label, onClick }` action rendered next to the toast
+>   message. Safety-plan contact removal was checked and needs no change:
+>   it's draft-only until "Save safety plan" is pressed, so it's already
+>   recoverable by not saving.
+> - **Missing empty state (§14.1)**: `DoseLog.tsx` rendered nothing with no
+>   logged doses; it now shows "No doses logged yet.", matching the pattern
+>   used elsewhere.
+> - **Banned word + unclear recovery text (§14.2)**: `RestoreSection.tsx`'s
+>   failure message used the explicitly banned word "failed"; reworded to
+>   "The restore didn't complete, and no data was changed. Please try
+>   again." Its generic backup-read-error fallback now hints at the likely
+>   causes (wrong file, wrong passphrase) instead of just "Could not read
+>   this backup file."
+> - **Plain-language gloss (§14.2)**: `HealthMeasurementForm.tsx`'s lab
+>   marker picker (ALT, AST, ALP, GGT, HbA1c, etc.) listed bare
+>   abbreviations with no explanation; added a short plain-language hint
+>   under the type selector for each marker.
+> - **Dark-aware theme colour + top safe-area inset (§14.3)**: `index.html`
+>   had one static `<meta name="theme-color">` with no dark variant; added
+>   a matching light/dark pair via `media="(prefers-color-scheme: ...)"`.
+>   `App.tsx`'s `<main>` now also applies
+>   `padding-top: env(safe-area-inset-top)` (only the bottom nav handled
+>   its inset before).
+> - **Bundle size and lazy loading (§14.4)**: every build warned of one
+>   517 KB JS chunk with zero code-splitting. `routes.tsx` now imports only
+>   Home and Check-in (Phase 1's most-prominent routes) eagerly; every
+>   other route lazy-loads via `React.lazy()` (defined in the new
+>   `src/app/lazyPages.ts`, split out to satisfy oxlint's
+>   `react(only-export-components)` rule), wrapped in a `<Suspense>` in
+>   `App.tsx`. The build now produces a 451.95 KB main chunk plus 12 small
+>   per-route chunks (0.46–17.67 KB each) with no size warning.
+> - **Unbounded dataset rendering (§14.4)**: `CommitmentsPage`,
+>   `ObserverPage`, and `HealthPage` each rendered their entire history with
+>   no cap — thousands of card mounts at five-year scale. Added
+>   `src/components/ShowMoreList.tsx` (renders the first 25 items plus a
+>   "Show all (N total)" button) and adopted it in all three pages.
+>   `HealthMeasurementList.tsx` was split into a single-item
+>   `HealthMeasurementCard.tsx` to fit this pattern and then deleted.
+>   `DoseLog` already capped its own rendering and needed no change.
+> - **IndexedDB query performance (§14.4)**: added
+>   `src/data/__tests__/performance.test.ts`, seeding ~5 years of synthetic
+>   daily check-ins, commitments, observer entries, and health measurements
+>   directly into `fake-indexeddb` and asserting Home's 7-day and Trends'
+>   90-day `dailyCheckInRepository.listByDateRange` calls, plus full
+>   `.list()` calls on the other three repositories, each complete well
+>   under a 200ms budget — confirming the queries themselves were never the
+>   bottleneck at this scale, only the unbounded DOM rendering above was.
+> - Verified with `npx tsc -b`, `npm run lint`, `npm run format:check`,
+>   `npm test` (160 tests / 29 files), `npm run build`, and the full
+>   Playwright suite across both `chromium` and `mobile-chromium` (54
+>   tests) plus the offline suite (4 tests) — all pass. Lazy-loading routes
+>   introduced a real async gap where only the `<Suspense>` fallback (no
+>   `<h1>`) is present; `e2e/accessibility.spec.ts` now waits for the `h1`
+>   to render before running axe, otherwise 11 of 14 routes falsely failed
+>   `page-has-heading-one`.
 
 ---
 
