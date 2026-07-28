@@ -1437,7 +1437,7 @@ Create critical Playwright flows:
 
 ## 13.4 Test data
 
-- [ ] Add realistic, non-identifying fixtures covering:
+- [x] Add realistic, non-identifying fixtures covering:
   - stable baseline;
   - possible activation pattern;
   - possible low-energy and withdrawal pattern;
@@ -1451,10 +1451,54 @@ Create critical Playwright flows:
 
 Acceptance criteria:
 
-- [ ] All tests pass reliably.
-- [ ] Tests do not depend on network access.
-- [ ] No real personal data appears in fixtures.
-- [ ] Critical end-to-end flows pass in mobile and desktop viewports.
+- [x] All tests pass reliably.
+- [x] Tests do not depend on network access.
+- [x] No real personal data appears in fixtures.
+- [x] Critical end-to-end flows pass in mobile and desktop viewports.
+
+> Implementation note: unlike every other phase, §13.1–13.3 above ship with
+> no per-bullet checkboxes in this file — they were always meant as a
+> coverage checklist to audit against the suite that grew organically
+> through Phases 2–12, not a from-scratch build list. An audit against every
+> bullet found most of it already covered incidentally; this phase filled
+> the real, specific gaps found:
+>
+> - **13.1**: added the only three schemas with no direct test —
+>   `alertRuleSchema`, `safetyPlanSchema`, `appPreferenceSchema`
+>   (`src/data/schemas/__tests__/`). Everything else (date/range math,
+>   weekly alcohol totals, baseline comparisons, cancellation summaries,
+>   reference-range logic, all 10 rule evaluators, missing-data handling,
+>   encrypted backup/restore, and the version-1→2 migration) already had
+>   coverage from the phases that built them.
+> - **13.2**: added component tests for the 7 of 10 listed items that had
+>   none — conditional nap fields (`SleepSection`), conditional alcohol
+>   fields (`DailyRhythmSection`), conditional cancellation fields
+>   (`CommitmentCard`), medication status controls (`DoseLog`), the
+>   observer form, export selectors (`ExportCsvSection`), and destructive-
+>   action confirmation (`DeleteAllData`). Alert evidence display and the
+>   safety-plan link were already covered by `AlertCard.test.tsx`; the
+>   shared `ScaleInput` primitive was already covered generically (its
+>   many call sites are now additionally exercised by the new section
+>   tests above).
+> - **13.3**: added `e2e/onboarding-and-safety-plan.spec.ts` (flow 1, using
+>   the existing `BaselineEditor`/`SafetyPlanPage` UI — building a
+>   first-run wizard is Phase 3's scope, not this testing phase's),
+>   `e2e/commitments-and-observer.spec.ts` (flows 4–5),
+>   `e2e/medication-and-health.spec.ts` (flows 6–7); extended
+>   `e2e/check-in.spec.ts` with an edit-and-resave step (completing flow 2)
+>   and a new nap/alcohol test (flow 3); extended `e2e/rules.spec.ts` to
+>   expand the evidence disclosure and assert an entry is actually shown,
+>   not just its summary count (completing flow 8). Flows 9–13 already
+>   passed.
+> - **13.4**: added one seed check-in demonstrating "improved appetite and
+>   satiety" (`src/data/seed.ts`), the only one of the ten named scenarios
+>   missing from the existing fixtures.
+> - e2e still isn't run in CI (`deploy-pages.yml` only runs format/lint/
+>   tsc/`npm test`/build) — unchanged from every prior phase's design, not
+>   a new gap introduced here. `playwright.config.ts` already ran both
+>   `chromium` and `mobile-chromium` by default; `playwright.offline.config.ts`
+>   only had `chromium` and now has both too, so flow 13 gets the same
+>   dual-viewport coverage as everything else.
 
 ---
 

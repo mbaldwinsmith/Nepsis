@@ -29,5 +29,12 @@ export default defineConfig({
         launchOptions: { executablePath: '/opt/pw-browsers/chromium' },
       },
     },
+    {
+      name: 'mobile-chromium',
+      use: {
+        ...devices['Pixel 7'],
+        launchOptions: { executablePath: '/opt/pw-browsers/chromium' },
+      },
+    },
   ],
 })

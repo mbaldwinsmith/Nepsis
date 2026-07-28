@@ -28,6 +28,16 @@ test('enabling a rule surfaces a review card on Home once seed data matches it',
   await expect(homeCard.getByText('Review', { exact: true })).toBeVisible()
   await expect(homeCard.getByRole('link', { name: 'View safety plan' })).toBeVisible()
 
+  // Expand the evidence disclosure and confirm at least one evidence entry
+  // is actually shown, not just its summary count.
+  const evidenceSummary = homeCard
+    .locator('summary')
+    .filter({ hasText: 'What triggered this' })
+  await expect(evidenceSummary).toContainText(/What triggered this \(\d+\)/)
+  await evidenceSummary.click()
+  const evidenceList = homeCard.locator('details ul li')
+  await expect(evidenceList.first()).toBeVisible()
+
   await homeCard.getByRole('button', { name: 'Dismiss' }).click()
   await expect(page.getByText('Restlessness review')).toHaveCount(0)
 })

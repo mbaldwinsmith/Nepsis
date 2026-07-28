@@ -1,0 +1,48 @@
+import { test, expect } from '@playwright/test'
+
+test('adds a medication, logs a dose, and records a dose-change transition event', async ({
+  page,
+}) => {
+  await page.goto('/#/medication')
+
+  await page.getByLabel('Medication name').fill('Sample medication A')
+  await page.getByRole('button', { name: 'Add medication' }).click()
+  await expect(
+    page.getByRole('listitem').filter({ hasText: 'Sample medication A' }),
+  ).toBeVisible()
+
+  await page
+    .getByRole('radiogroup', { name: 'Status' })
+    .getByText('Taken', { exact: true })
+    .click()
+  await page.getByRole('button', { name: 'Log dose' }).click()
+  await expect(
+    page.locator('li.hint').filter({ hasText: 'Sample medication A' }),
+  ).toBeVisible()
+
+  await page
+    .getByRole('radiogroup', { name: 'Event type' })
+    .getByText('Dose increased', { exact: true })
+    .click()
+  await page.getByLabel('Title').fill('Dose increased to 10mg (agreed with prescriber)')
+  await page.getByRole('button', { name: 'Add event' }).click()
+  await expect(page.getByText('Dose increased')).toBeVisible()
+  await expect(
+    page.getByText('Dose increased to 10mg (agreed with prescriber)'),
+  ).toBeVisible()
+})
+
+test('records a weight measurement and a liver-function result', async ({ page }) => {
+  await page.goto('/#/health')
+
+  await page.getByLabel('Value').fill('78.2')
+  await page.getByRole('button', { name: 'Save measurement' }).click()
+  await expect(page.getByText('78.2 kg')).toBeVisible()
+
+  await page.getByLabel('Type').selectOption('alt')
+  await page.getByLabel('Value').fill('28')
+  await page.getByLabel('Reference minimum (optional)').fill('7')
+  await page.getByLabel('Reference maximum (optional)').fill('55')
+  await page.getByRole('button', { name: 'Save measurement' }).click()
+  await expect(page.getByText('28 U/L')).toBeVisible()
+})

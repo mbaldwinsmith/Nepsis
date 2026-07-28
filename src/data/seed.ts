@@ -140,6 +140,18 @@ function buildCheckIns(): DailyCheckIn[] {
     }),
   )
 
+  // Improved appetite and satiety (the opposite direction): today
+  entries.push(
+    checkIn(0, {
+      appetite: {
+        appetite: 1,
+        hungerBetweenMeals: 0,
+        satietyAfterNormalMeal: 4,
+      },
+      mood: { lowMood: 0, energy: 3 },
+    }),
+  )
+
   return entries
 }
 
