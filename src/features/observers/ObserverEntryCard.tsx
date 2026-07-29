@@ -27,7 +27,7 @@ function UrgentSafetyPlanActions() {
     <div
       className="stack"
       style={{
-        borderLeft: '4px solid var(--color-urgent)',
+        borderLeft: '3px solid var(--color-urgent)',
         background: 'var(--color-urgent-bg)',
         padding: 'var(--space-3)',
         borderRadius: 'var(--radius-md)',
