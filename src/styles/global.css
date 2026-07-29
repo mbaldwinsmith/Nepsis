@@ -297,6 +297,47 @@ button {
   font-weight: 600;
 }
 
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline__item {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.timeline__rail {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--space-4);
+}
+
+.timeline__node {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.timeline__connector {
+  flex: 1;
+  width: 2px;
+  min-height: var(--space-4);
+  background: var(--color-hair);
+  margin-top: var(--space-1);
+}
+
+.timeline__content {
+  flex: 1;
+  padding-bottom: var(--space-4);
+}
+
 @media (min-width: 640px) {
   .metric-grid {
     grid-template-columns: repeat(2, 1fr);
