@@ -64,8 +64,12 @@ test('app shell and core routes work after the network goes offline', async ({
   await page.goto('/#/check-in')
   await page
     .getByRole('radiogroup', { name: 'Sleep quality' })
-    .getByText('3', { exact: true })
+    .getByText('good', { exact: true })
     .click()
+  for (let i = 0; i < 12; i++) {
+    await page.getByRole('button', { name: /^(Continue|Review)$/ }).click()
+  }
+  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible()
   await page.getByRole('button', { name: 'Save check-in' }).click()
   await expect(page.getByText('Check-in saved')).toBeVisible()
 })
