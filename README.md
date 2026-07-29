@@ -8,9 +8,9 @@ Nepsis is designed to help a person, their trusted supporters, and their clinici
 
 ## Project status
 
-Nepsis is currently an MVP project specification. The complete implementation plan and acceptance criteria are in [`TASKS.md`](./TASKS.md).
+Nepsis's MVP is complete — all 15 phases in [`TASKS.md`](./TASKS.md) are implemented, tested, and merged. `TASKS.md` remains the authoritative acceptance-criteria record and the place to check what a given feature was actually built to satisfy; [`CHANGELOG.md`](./CHANGELOG.md) tracks releases. The current version is shown in **Settings → Nepsis v_x.y.z_**.
 
-The intended MVP includes:
+The MVP includes:
 
 - daily self-check-ins;
 - sleep and lunchtime nap tracking;
@@ -179,59 +179,52 @@ Reference ranges are entered from the laboratory report. When a value falls outs
 
 It must not interpret the result.
 
-## Intended technical stack
+## Technical stack
 
-For a fresh implementation:
-
-- React
-- TypeScript
-- Vite
-- React Router
-- Dexie for IndexedDB
-- Zod for runtime validation
+- React 19 + TypeScript (strict)
+- Vite 8
+- React Router 7 (`HashRouter`, so GitHub Pages needs no server-side rewrite rules)
+- Dexie 4 for IndexedDB
+- Zod 4 for runtime validation
 - `vite-plugin-pwa`
-- CSS Modules or a small plain-CSS design system
-- Vitest
-- React Testing Library
-- Playwright
+- A small plain-CSS design system (`src/styles/`) with light/dark tokens
+- Vitest + React Testing Library
+- Playwright + `@axe-core/playwright`
+- oxlint + Prettier
 
-Use existing repository conventions where they are sensible. Do not introduce a new framework or large dependency without a clear need.
+Any new dependency should have a clear need — this stays a small, local-first app.
 
-## Suggested project structure
+## Project structure
 
 ```text
 src/
-  app/
-    App.tsx
-    routes.tsx
-  components/
-    AlertCard.tsx
-    CheckInCard.tsx
-    ScaleInput.tsx
-    TrendChart.tsx
+  app/                    App shell, routing, home page, update notice
+  components/             Shared UI: AlertCard, ScaleInput, TrendChart, ToastProvider, ShowMoreList, ...
   data/
-    db.ts
-    migrations.ts
-    repositories/
-    schemas.ts
+    db.ts                 Dexie database + table definitions
+    migrations.ts         Migration history and process notes
+    schemas/               Zod schemas + types, one file per entity
+    repositories/          Validated CRUD functions — UI never calls Dexie directly
+    backup/                Encrypted-backup envelope, creation, and restore
   features/
-    check-in/
-    commitments/
-    observers/
-    medication/
-    health/
-    trends/
-    safety-plan/
-    export/
-    settings/
-  rules/
-    alertEngine.ts
-    defaultRules.ts
-  privacy/
-    encryptedBackup.ts
-  styles/
+    check-in/               Daily self-check-in and its sections
+    commitments/             Plans, attendance, and cancellations
+    observers/                Observer check-ins
+    medication/                Medication records and dose log
+    health/                     Health measurements
+    trends/                      Trend charts and pattern cards
+    safety-plan/                  Personal safety plan
+    data-management/               CSV export, backup, restore, delete-all
+    settings/                       Settings, baseline editor, privacy curtain
+    rules/                            Review-rule configuration screen
+    install/                          Install-help screen
+    privacy/                          Privacy summary screen
+  rules/                  Alert-rule engine: evaluators, defaults, date-window helpers
+  privacy/                Prohibited-wording list shared by the UI and its e2e check
+  utils/                  Date helpers and other small shared utilities
 public/
   icons/
+e2e/                      Playwright specs (run across desktop and mobile viewports)
 ```
 
 ## Getting started
@@ -326,15 +319,27 @@ Presentation components should not call Dexie directly. Use repository or servic
 
 ### Schema versioning
 
-Every persisted record and full backup should be associated with a schema version.
+The database (`src/data/db.ts`) currently holds 11 tables across two Dexie
+`version()` blocks: version 1 shipped the 10 core entity tables, and
+version 2 added `appPreferences` (device-local UI preferences, such as the
+privacy curtain toggle — deliberately excluded from backup/restore since
+it isn't portable personal data). Every persisted record also carries a
+`schemaVersion` field from `SCHEMA_VERSION` (`src/data/schemas/shared.ts`),
+currently `1` — this tracks the shape of individual records, independent of
+the Dexie table-level version number above.
 
 Database changes must include:
 
-- a Dexie migration;
-- validation updates;
-- migration tests;
-- backup compatibility consideration;
-- release notes.
+- a new Dexie `version()` block in `db.ts` (never edit a previously shipped
+  block);
+- an entry in `migrationHistory` (`src/data/migrations.ts`);
+- a bump to `SCHEMA_VERSION` if the persisted record shape itself changed;
+- a migration test in `src/data/__tests__/migrations.test.ts` covering
+  upgrade from the previous version (see the existing
+  "upgrades an existing version-1 database to version 2" test for the
+  pattern);
+- backup/restore compatibility consideration;
+- a `CHANGELOG.md` entry.
 
 ### Missing data
 
@@ -428,14 +433,19 @@ Exports should use ISO dates, explicit units, separate files or clearly namespac
 
 ### Encrypted backup
 
-Full backups should use:
+Full backups (`src/data/backup/`) use:
 
-- a versioned JSON envelope;
-- a passphrase-derived key;
-- authenticated encryption;
-- the Web Crypto API;
-- atomic restore;
-- validation before import.
+- a versioned JSON envelope (`BACKUP_FORMAT_VERSION`, currently `1`) —
+  versioned independently of the data `schemaVersion`, since the envelope
+  shape and the record shapes inside it can change on different schedules;
+- a PBKDF2 (SHA-256) passphrase-derived key;
+- AES-GCM authenticated encryption;
+- the Web Crypto API (no third-party crypto library);
+- atomic restore — nothing is written to IndexedDB until every record has
+  been parsed and validated;
+- per-record Zod validation against each entity's real schema before
+  import, so a corrupted or hand-edited backup is rejected with a precise
+  error rather than partially imported.
 
 The passphrase must never be stored.
 
@@ -463,37 +473,47 @@ Offline-capable flows include:
 - settings;
 - export and backup generation.
 
-App updates must not erase IndexedDB data, discard an unsaved form, or force an immediate reload without warning.
+App updates must not erase IndexedDB data, discard an unsaved form, or force an immediate reload without warning: the service worker registers in `registerType: 'prompt'` mode, and `src/app/UpdateNotice.tsx` shows a dismissible "A new version of Nepsis is ready" banner with an explicit "Refresh now" action — updates only apply when the user chooses to, never silently.
 
 ## Testing strategy
 
-### Unit tests
+### Unit and component tests
 
-Cover validation schemas, date calculations, weekly alcohol totals, baseline comparisons, commitment summaries, reference-range display, rule evaluation, missing-data handling, encryption and restore, and database migrations.
-
-### Component tests
-
-Cover scale controls, conditional nap and alcohol fields, cancellation details, medication statuses, observer forms, alert evidence, safety-plan links, export selectors, and destructive confirmation.
+`npm test` runs 160 Vitest tests across 29 files, covering validation
+schemas, date calculations, weekly alcohol totals, baseline comparisons,
+commitment summaries, reference-range display, rule evaluation,
+missing-data handling, encryption and restore, database migrations
+(including an upgrade test from a version-1 to version-2 database), scale
+controls, conditional nap/alcohol/cancellation fields, medication statuses,
+observer forms, alert evidence, safety-plan links, export selectors,
+destructive-action confirmation, and IndexedDB query performance against
+~5 years of synthetic data (`src/data/__tests__/performance.test.ts`).
 
 ### End-to-end tests
 
-Critical flows:
+`npm run test:e2e` runs the Playwright suite in `e2e/` across both a
+desktop (`chromium`) and a mobile (`mobile-chromium`, Pixel 7) project —
+54 tests in total, covering:
 
-1. Complete onboarding.
-2. Create and edit a daily check-in.
-3. Record nap need and nap behaviour.
-4. Record alcohol units.
-5. Record social activity.
-6. Record a distress-related cancellation.
-7. Add an observer entry.
-8. Add a medication transition event.
-9. Add weight and laboratory measurements.
-10. Trigger and inspect a review rule.
-11. Export CSV.
-12. Create an encrypted backup.
-13. Delete all local data.
-14. Restore the backup.
-15. Reload and use the app offline.
+1. Onboarding, baseline entry, and safety plan.
+2. Completing and editing a daily check-in, including a nap/alcohol case.
+3. Recording social activity and a distress-related cancellation.
+4. Adding an observer entry.
+5. Adding a medication dose change.
+6. Adding a weight measurement and a liver-function result.
+7. Triggering a review rule and inspecting its evidence.
+8. Exporting CSV, creating an encrypted backup, deleting all data, and
+   restoring from that backup.
+9. An automated accessibility (axe) check across every route.
+
+`npm run test:e2e:offline` runs a separate 4-test suite
+(`playwright.offline.config.ts`) against the production build (the service
+worker only registers outside dev mode) to verify installability and
+offline behaviour.
+
+e2e is not run in CI (`.github/workflows/deploy-pages.yml` runs format,
+lint, `tsc`, `npm test`, and the production build only) — a deliberate
+scoping decision, not an oversight.
 
 Tests must not use real personal data.
 
@@ -602,26 +622,27 @@ Do not build speculative infrastructure for these features.
 
 ## Release readiness
 
-Before an MVP release:
+Verified for the 0.1.0 MVP release (see `TASKS.md` §15.3 for how each item
+was checked):
 
-- [ ] Fresh install tested
-- [ ] Upgrade migration tested
-- [ ] Offline operation tested
-- [ ] CSV export tested
-- [ ] Encrypted backup tested
-- [ ] Restore tested
-- [ ] Delete-all tested
-- [ ] Accessibility reviewed
-- [ ] Mobile layout reviewed
-- [ ] No analytics or trackers present
-- [ ] No diagnostic claims present
-- [ ] No medication advice present
-- [ ] All tests pass
-- [ ] Production build succeeds
-- [ ] Schema version documented
-- [ ] Backup version documented
-- [ ] Known limitations documented
-- [ ] Release notes written
+- [x] Fresh install tested
+- [x] Upgrade migration tested
+- [x] Offline operation tested
+- [x] CSV export tested
+- [x] Encrypted backup tested
+- [x] Restore tested
+- [x] Delete-all tested
+- [x] Accessibility reviewed
+- [x] Mobile layout reviewed
+- [x] No analytics or trackers present
+- [x] No diagnostic claims present
+- [x] No medication advice present
+- [x] All tests pass
+- [x] Production build succeeds
+- [x] Schema version documented
+- [x] Backup version documented
+- [x] Known limitations documented
+- [x] Release notes written
 
 ## Known MVP limitations
 
@@ -663,12 +684,12 @@ Until a licence file is added, all rights are reserved by the project owner and 
 ## Documentation
 
 - [`TASKS.md`](./TASKS.md) — full MVP implementation and polish plan
+- [`CHANGELOG.md`](./CHANGELOG.md) — release history
 - `README.md` — project overview and development guide
 - Future:
   - `CONTRIBUTING.md`
   - `PRIVACY.md`
   - `SECURITY.md`
-  - `CHANGELOG.md`
 
 ## Final principle
 

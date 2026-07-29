@@ -2,6 +2,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import packageJson from './package.json' with { type: 'json' }
 
 // GitHub Pages serves this project from https://<user>.github.io/Nepsis/, a
 // subpath — every asset, icon, and manifest URL needs that prefix. Local dev,
@@ -12,6 +13,9 @@ const base = process.env.GITHUB_PAGES === 'true' ? '/Nepsis/' : '/'
 // https://vite.dev/config/
 export default defineConfig({
   base,
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
   plugins: [
     react(),
     VitePWA({

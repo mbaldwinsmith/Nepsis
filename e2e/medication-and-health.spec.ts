@@ -26,7 +26,6 @@ test('adds a medication, logs a dose, and records a dose-change transition event
     .click()
   await page.getByLabel('Title').fill('Dose increased to 10mg (agreed with prescriber)')
   await page.getByRole('button', { name: 'Add event' }).click()
-  await expect(page.getByText('Dose increased')).toBeVisible()
   await expect(
     page.getByText('Dose increased to 10mg (agreed with prescriber)'),
   ).toBeVisible()

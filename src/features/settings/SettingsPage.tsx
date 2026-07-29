@@ -68,6 +68,8 @@ export function SettingsPage() {
 
       <DevSeedAction />
       <DeleteAllData />
+
+      <p className="hint">Nepsis v{__APP_VERSION__}</p>
     </div>
   )
 }
