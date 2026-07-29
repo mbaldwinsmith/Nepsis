@@ -280,6 +280,12 @@ button {
   border-color: var(--color-accent);
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
 .segmented-endpoints {
   display: flex;
   justify-content: space-between;
