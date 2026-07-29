@@ -9,6 +9,8 @@ version numbers still increase monotonically and are shown in
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-07-29
+
 ### Added
 
 - Past days can now be filled in or corrected: Home's new "Recent check-ins"
