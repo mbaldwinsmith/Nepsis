@@ -9,6 +9,8 @@ version numbers still increase monotonically and are shown in
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-07-29
+
 ### Added
 
 - Past days can now be filled in or corrected: Home's new "Recent check-ins"
@@ -16,6 +18,14 @@ version numbers still increase monotonically and are shown in
   direct edit link, plus a "+ Fill in an earlier day" date picker for
   anything older. The check-in wizard clearly marks which day it's editing
   when it isn't today.
+
+### Changed
+
+- Replaced the placeholder favicon and app icons (a bright purple/violet
+  mark that didn't match the app) with a new icon derived from the actual
+  Nepsis mark — flat concentric arcs in the app's own slate-teal and
+  off-white palette — covering the favicon, the 192/512 and maskable PWA
+  icons, and the Apple touch icon.
 
 ## [0.2.0] — 2026-07-29
 
