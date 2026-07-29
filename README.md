@@ -135,6 +135,12 @@ skipped fields are never saved as zero. Scale questions are word-labelled
 (e.g. "none" to "severe") rather than shown as raw numbers; the stored value
 underneath is unchanged. The app allows partial entries and later editing.
 
+Check-ins aren't limited to today. Home's "Recent check-ins" list shows the
+last six days with a recorded/not-recorded status and a direct edit link, and
+a "+ Fill in an earlier day" date picker opens the same wizard for any earlier
+date — useful for catching up after a missed day or two. The wizard header
+names the day being edited whenever it isn't today.
+
 ### Plans and cancellations
 
 The user can record commitments involving friends, family, work, church, appointments, volunteering, or other activities.

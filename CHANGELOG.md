@@ -9,6 +9,14 @@ version numbers still increase monotonically and are shown in
 
 ## [Unreleased]
 
+### Added
+
+- Past days can now be filled in or corrected: Home's new "Recent check-ins"
+  list shows the last six days with a recorded/not-recorded status and a
+  direct edit link, plus a "+ Fill in an earlier day" date picker for
+  anything older. The check-in wizard clearly marks which day it's editing
+  when it isn't today.
+
 ## [0.2.0] — 2026-07-29
 
 ### Changed

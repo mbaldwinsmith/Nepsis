@@ -19,6 +19,7 @@ import {
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },
   { path: '/check-in', element: <CheckInPage /> },
+  { path: '/check-in/:date', element: <CheckInPage /> },
   { path: '/observer', element: <ObserverPage /> },
   { path: '/commitments', element: <CommitmentsPage /> },
   { path: '/health', element: <HealthPage /> },
