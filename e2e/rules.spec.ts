@@ -20,7 +20,7 @@ test('enabling a rule surfaces a review card on Home once seed data matches it',
   await expect(enabledCheckbox).toBeChecked()
 
   await page.goto('/#/')
-  await expect(page.getByText('Worth reviewing')).toBeVisible()
+  await expect(page.getByText('Worth a look, when you have a moment')).toBeVisible()
   const homeCard = page
     .locator('div.card')
     .filter({ hasText: 'Restlessness review' })

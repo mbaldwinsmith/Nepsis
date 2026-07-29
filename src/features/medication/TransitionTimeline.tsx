@@ -45,14 +45,20 @@ export function TransitionTimeline({ events, onCreate }: Props) {
       {events.length === 0 ? (
         <p className="hint">No events recorded yet.</p>
       ) : (
-        <ol style={{ listStyle: 'none', margin: 0, padding: 0 }} className="stack">
-          {events.map((event) => (
-            <li key={event.id} className="card" style={{ boxShadow: 'none' }}>
-              <strong>{typeLabels[event.type]}</strong>
-              <p className="hint" style={{ margin: 0 }}>
-                {new Date(event.occurredAt).toLocaleString()}
-              </p>
-              <p style={{ margin: 0 }}>{event.title}</p>
+        <ol className="timeline">
+          {events.map((event, i) => (
+            <li className="timeline__item" key={event.id}>
+              <span className="timeline__rail" aria-hidden="true">
+                <span className="timeline__node" />
+                {i < events.length - 1 && <span className="timeline__connector" />}
+              </span>
+              <div className="timeline__content">
+                <strong>{typeLabels[event.type]}</strong>
+                <p className="hint" style={{ margin: 0 }}>
+                  {new Date(event.occurredAt).toLocaleString()}
+                </p>
+                <p style={{ margin: 0 }}>{event.title}</p>
+              </div>
             </li>
           ))}
         </ol>

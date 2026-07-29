@@ -3,6 +3,7 @@ import { HashRouter, useRoutes } from 'react-router-dom'
 import { ErrorBoundary } from '../components/ErrorBoundary'
 import { ToastProvider } from '../components/ToastProvider'
 import { BottomNav } from '../components/BottomNav'
+import { LeftRail } from '../components/LeftRail'
 import { ensureDefaultRulesExist } from '../rules/defaultRules'
 import { routes } from './routes'
 import { UpdateNotice } from './UpdateNotice'
@@ -21,6 +22,7 @@ export default function App() {
     <ErrorBoundary>
       <ToastProvider>
         <HashRouter>
+          <LeftRail />
           <main style={{ paddingTop: 'env(safe-area-inset-top)' }}>
             <Suspense fallback={<p className="page">Loading…</p>}>
               <AppRoutes />

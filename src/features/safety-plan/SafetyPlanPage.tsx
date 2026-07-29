@@ -16,6 +16,9 @@ function ContactList({
 }) {
   const [newLabel, setNewLabel] = useState('')
   const [newDetails, setNewDetails] = useState('')
+  const [editingId, setEditingId] = useState<string | undefined>()
+  const [editLabel, setEditLabel] = useState('')
+  const [editDetails, setEditDetails] = useState('')
 
   function add() {
     if (!newLabel.trim() || !newDetails.trim()) return
@@ -27,31 +30,78 @@ function ContactList({
     setNewDetails('')
   }
 
+  function startEdit(contact: Contact) {
+    setEditingId(contact.id)
+    setEditLabel(contact.label)
+    setEditDetails(contact.details)
+  }
+
+  function saveEdit() {
+    if (!editingId || !editLabel.trim() || !editDetails.trim()) return
+    onChange(
+      contacts.map((c) =>
+        c.id === editingId
+          ? { ...c, label: editLabel.trim(), details: editDetails.trim() }
+          : c,
+      ),
+    )
+    setEditingId(undefined)
+  }
+
   return (
     <div className="stack">
       <h2 style={{ fontSize: 'var(--text-title)' }}>{label}</h2>
       {contacts.length === 0 && <p className="hint">None added yet.</p>}
-      {contacts.map((c) => (
-        <div
-          key={c.id}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: 'var(--space-2)',
-          }}
-        >
-          <span>
-            <strong>{c.label}</strong> — {c.details}
-          </span>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => onChange(contacts.filter((x) => x.id !== c.id))}
+      {contacts.map((c) =>
+        editingId === c.id ? (
+          <div key={c.id} className="stack" style={{ gap: 'var(--space-2)' }}>
+            <TextField label="Edit label" value={editLabel} onChange={setEditLabel} />
+            <TextField
+              label="Edit details"
+              value={editDetails}
+              onChange={setEditDetails}
+            />
+            <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+              <button type="button" className="btn btn-primary" onClick={saveEdit}>
+                Save
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setEditingId(undefined)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            key={c.id}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 'var(--space-2)',
+            }}
           >
-            Remove
-          </button>
-        </div>
-      ))}
+            <span>
+              <strong>{c.label}</strong> — {c.details}
+            </span>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', flexShrink: 0 }}>
+              <button type="button" className="btn" onClick={() => startEdit(c)}>
+                Edit
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => onChange(contacts.filter((x) => x.id !== c.id))}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ),
+      )}
       <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
         <TextField label="Label" value={newLabel} onChange={setNewLabel} />
         <TextField label="Details" value={newDetails} onChange={setNewDetails} />
@@ -114,7 +164,11 @@ export function SafetyPlanPage() {
         />
       </section>
 
-      <section className="card stack">
+      <section
+        className="card stack"
+        style={{ borderLeft: '3px solid var(--color-review)' }}
+      >
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Review</h2>
         <TextField
           label="What 'review' means for me"
           multiline
@@ -123,6 +177,16 @@ export function SafetyPlanPage() {
             setDraft({ ...draft, reviewActions: reviewActions || undefined })
           }
         />
+      </section>
+
+      <section
+        className="card stack"
+        style={{
+          borderLeft: '3px solid var(--color-urgent)',
+          background: 'var(--color-urgent-bg)',
+        }}
+      >
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Act</h2>
         <TextField
           label="What 'act' means for me"
           multiline
@@ -131,6 +195,9 @@ export function SafetyPlanPage() {
             setDraft({ ...draft, urgentActions: urgentActions || undefined })
           }
         />
+      </section>
+
+      <section className="card stack">
         <TextField
           label="Instructions already agreed with clinicians or supporters"
           multiline

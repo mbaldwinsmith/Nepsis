@@ -1,5 +1,5 @@
 import { ScaleInput } from '../../../components/ScaleInput'
-import { CheckboxField } from '../../../components/CheckboxField'
+import { ToggleField } from '../../../components/ToggleField'
 import { TextField } from '../../../components/TextField'
 import { NONE_TO_SEVERE } from '../../../utils/scaleWords'
 import type { MedicationEffects } from '../../../data/schemas'
@@ -13,7 +13,7 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
   return (
     <section className="card stack">
       <h2>Medication and side effects</h2>
-      <CheckboxField
+      <ToggleField
         label="Missed or delayed a dose today"
         checked={value.missedOrDelayedDose ?? false}
         onChange={(checked) =>

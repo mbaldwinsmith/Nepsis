@@ -5,7 +5,8 @@ import { todayIsoDate } from '../../utils/date'
 import { RangeSelector, type RangePreset } from './RangeSelector'
 import { MetricPicker } from './MetricPicker'
 import { PatternCard } from './PatternCard'
-import { defaultMetricKeys, type MetricKey } from './metrics'
+import { MetricSparklineCard } from './MetricSparklineCard'
+import { defaultMetricKeys, metricKeys, type MetricKey } from './metrics'
 import { useTrendData } from './useTrendData'
 import { usePatternCards } from './usePatternCards'
 
@@ -31,6 +32,11 @@ export function TrendsPage() {
     events,
     loading: chartLoading,
   } = useTrendData(rangeStart, rangeEnd, selectedMetrics)
+  const { series: allSeries, loading: allSeriesLoading } = useTrendData(
+    rangeStart,
+    rangeEnd,
+    metricKeys,
+  )
   const { cards, loading: cardsLoading } = usePatternCards(rangeStart, rangeEnd)
 
   return (
@@ -50,10 +56,22 @@ export function TrendsPage() {
           onCustomStartChange={setCustomStart}
           onCustomEndChange={setCustomEnd}
         />
-        <MetricPicker selected={selectedMetrics} onChange={setSelectedMetrics} />
       </section>
 
-      <section className="card">
+      <section className="stack">
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Recent patterns</h2>
+        {cardsLoading ? (
+          <p>Loading…</p>
+        ) : cards.length === 0 ? (
+          <p className="hint">No notable patterns in the selected period yet.</p>
+        ) : (
+          cards.map((card) => <PatternCard key={card.id} card={card} />)
+        )}
+      </section>
+
+      <section className="card stack">
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Compare metrics</h2>
+        <MetricPicker selected={selectedMetrics} onChange={setSelectedMetrics} />
         {chartLoading ? (
           <p>Loading…</p>
         ) : (
@@ -67,13 +85,20 @@ export function TrendsPage() {
       </section>
 
       <section className="stack">
-        <h2 style={{ fontSize: '1rem' }}>Recent patterns</h2>
-        {cardsLoading ? (
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Every metric</h2>
+        {allSeriesLoading ? (
           <p>Loading…</p>
-        ) : cards.length === 0 ? (
-          <p className="hint">No notable patterns in the selected period yet.</p>
         ) : (
-          cards.map((card) => <PatternCard key={card.id} card={card} />)
+          <div className="metric-grid">
+            {allSeries.map((s) => (
+              <MetricSparklineCard
+                key={s.key}
+                series={s}
+                rangeStart={rangeStart}
+                rangeEnd={rangeEnd}
+              />
+            ))}
+          </div>
         )}
       </section>
     </div>

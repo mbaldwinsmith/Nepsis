@@ -19,7 +19,10 @@ test('records a commitment and marks it cancelled for distress-related reasons',
   await expect(page.getByText('Lunch with a friend')).toBeVisible()
 
   const card = page.locator('div.card').filter({ hasText: 'Lunch with a friend' })
-  await card.getByRole('button', { name: 'Cancelled' }).click()
+  await card
+    .getByRole('radiogroup', { name: 'Outcome' })
+    .getByText('Cancelled', { exact: true })
+    .click()
   await expect(card.getByText('Reason (select any that apply)')).toBeVisible()
   await card.getByText('Distress', { exact: true }).click()
 
@@ -47,6 +50,6 @@ test('submits an observer entry and it appears in the app without console errors
   await page.getByRole('button', { name: 'Save observation' }).click()
 
   await expect(page.getByText('Observer: Friend A')).toBeVisible()
-  await expect(page.getByText('Concern: keepWatching')).toBeVisible()
+  await expect(page.getByText('Concern: Keep watching')).toBeVisible()
   expect(errors).toEqual([])
 })

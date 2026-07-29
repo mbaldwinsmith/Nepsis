@@ -2,24 +2,16 @@ import { useState } from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { DailyRhythmSection } from '../DailyRhythmSection'
-import type { Alcohol, Social } from '../../../../data/schemas'
+import { AlcoholSection } from '../AlcoholSection'
+import type { Alcohol } from '../../../../data/schemas'
 
-function Harness({ initialAlcohol = {} }: { initialAlcohol?: Alcohol }) {
-  const [alcohol, setAlcohol] = useState<Alcohol>(initialAlcohol)
-  const [social, setSocial] = useState<Social>({})
-  return (
-    <DailyRhythmSection
-      alcohol={alcohol}
-      social={social}
-      onChangeAlcohol={setAlcohol}
-      onChangeSocial={setSocial}
-    />
-  )
+function Harness({ initial = {} }: { initial?: Alcohol }) {
+  const [alcohol, setAlcohol] = useState<Alcohol>(initial)
+  return <AlcoholSection value={alcohol} onChange={setAlcohol} />
 }
 
-describe('DailyRhythmSection', () => {
-  it('hides alcohol context and perceived-effect controls when no units are recorded', () => {
+describe('AlcoholSection', () => {
+  it('hides context and perceived-effect controls when no units are recorded', () => {
     render(<Harness />)
     expect(screen.queryByRole('radiogroup', { name: 'Context' })).not.toBeInTheDocument()
     expect(
@@ -37,7 +29,7 @@ describe('DailyRhythmSection', () => {
   })
 
   it('hides context and perceived-effect controls again once units drop back to zero', async () => {
-    render(<Harness initialAlcohol={{ unitsConsumed: 2, context: 'social' }} />)
+    render(<Harness initial={{ unitsConsumed: 2, context: 'social' }} />)
     expect(screen.getByRole('radiogroup', { name: 'Context' })).toBeInTheDocument()
 
     await userEvent.clear(screen.getByLabelText('Units consumed'))

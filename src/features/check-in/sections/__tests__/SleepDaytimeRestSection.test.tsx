@@ -2,15 +2,15 @@ import { useState } from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SleepSection } from '../SleepSection'
+import { SleepDaytimeRestSection } from '../SleepDaytimeRestSection'
 import type { Sleep } from '../../../../data/schemas'
 
 function Harness({ initial = {} }: { initial?: Sleep }) {
   const [value, setValue] = useState<Sleep>(initial)
-  return <SleepSection value={value} onChange={setValue} />
+  return <SleepDaytimeRestSection value={value} onChange={setValue} />
 }
 
-describe('SleepSection', () => {
+describe('SleepDaytimeRestSection', () => {
   it('hides nap duration and after-effect fields until a nap is marked as taken', () => {
     render(<Harness />)
     expect(screen.queryByLabelText('Nap duration (minutes)')).not.toBeInTheDocument()
@@ -19,16 +19,16 @@ describe('SleepSection', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('reveals nap fields once "Nap taken" is checked', async () => {
+  it('reveals nap fields once "Nap taken" is switched on', async () => {
     render(<Harness />)
-    await userEvent.click(screen.getByLabelText('Nap taken'))
+    await userEvent.click(screen.getByRole('switch', { name: 'Nap taken' }))
     expect(screen.getByLabelText('Nap duration (minutes)')).toBeInTheDocument()
     expect(
       screen.getByRole('radiogroup', { name: 'Nap after-effect' }),
     ).toBeInTheDocument()
   })
 
-  it('clears nap duration and after-effect when "Nap taken" is unchecked again', async () => {
+  it('clears nap duration and after-effect when "Nap taken" is switched off again', async () => {
     render(
       <Harness
         initial={{ napTaken: true, napDurationMinutes: 30, napEffect: 'refreshed' }}
@@ -36,7 +36,7 @@ describe('SleepSection', () => {
     )
     expect(screen.getByLabelText('Nap duration (minutes)')).toBeInTheDocument()
 
-    await userEvent.click(screen.getByLabelText('Nap taken'))
+    await userEvent.click(screen.getByRole('switch', { name: 'Nap taken' }))
 
     expect(screen.queryByLabelText('Nap duration (minutes)')).not.toBeInTheDocument()
   })

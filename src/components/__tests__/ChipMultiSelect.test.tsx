@@ -69,4 +69,36 @@ describe('ChipMultiSelect', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Option A' }))
     expect(onChange).toHaveBeenCalledWith(['b'])
   })
+
+  it('disables unselected options once isOptionDisabled reports a cap is reached', async () => {
+    const onChange = vi.fn()
+    render(
+      <ChipMultiSelect
+        legend="Pick some"
+        name="picks"
+        options={options}
+        values={['a', 'b']}
+        onChange={onChange}
+        isOptionDisabled={(value) => value !== 'a' && value !== 'b'}
+      />,
+    )
+    expect(screen.getByRole('checkbox', { name: 'Option C' })).toBeDisabled()
+    expect(screen.getByRole('checkbox', { name: 'Option A' })).not.toBeDisabled()
+  })
+
+  it('still allows unchecking an already-selected option while at the cap', async () => {
+    const onChange = vi.fn()
+    render(
+      <ChipMultiSelect
+        legend="Pick some"
+        name="picks"
+        options={options}
+        values={['a', 'b']}
+        onChange={onChange}
+        isOptionDisabled={(value) => value !== 'a' && value !== 'b'}
+      />,
+    )
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Option A' }))
+    expect(onChange).toHaveBeenCalledWith(['b'])
+  })
 })

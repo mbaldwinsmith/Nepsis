@@ -4,6 +4,7 @@ test('enter a personal baseline and a safety plan, then confirm both persist acr
   page,
 }) => {
   await page.goto('/#/settings')
+  await page.getByText('+ Edit my baseline').click()
   await page.getByLabel('Usual sleep duration (minutes)').fill('440')
   await page.getByLabel('Usual appetite (0-4)').fill('2')
   await page.getByLabel('Usual satiety (0-4)').fill('3')
@@ -30,6 +31,7 @@ test('enter a personal baseline and a safety plan, then confirm both persist acr
   // actually persisted to IndexedDB, not just kept in in-memory state.
   await page.reload()
   await page.goto('/#/settings')
+  await page.getByText('+ Edit my baseline').click()
   await expect(page.getByLabel('Usual sleep duration (minutes)')).toHaveValue('440')
 
   await page.goto('/#/safety-plan')

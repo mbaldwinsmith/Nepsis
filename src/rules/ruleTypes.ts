@@ -1,6 +1,11 @@
 import type { DailyCheckIn, RuleType, SocialCommitment } from '../data/schemas'
 import { consecutiveRuns } from '../utils/dateWindows'
 import { isDistressRelated } from '../utils/distressReasons'
+import {
+  COMMITMENT_OUTCOME_LABELS,
+  COMMITMENT_REASON_LABELS,
+  OBSERVER_CONCERN_LABELS,
+} from '../utils/enumLabels'
 import type { Evidence, RuleContext, RuleEvaluation, RuleTypeDefinition } from './types'
 
 function isNum(v: number | undefined): v is number {
@@ -137,7 +142,10 @@ function evaluatePossibleLowEnergyPattern(context: RuleContext): RuleEvaluation 
   if (repeatedCancellations) {
     evidence.push(
       ...cancellations.map((c) =>
-        commitmentEvidence(c, `${c.type} commitment ${c.outcome}`),
+        commitmentEvidence(
+          c,
+          `${c.type} commitment ${COMMITMENT_OUTCOME_LABELS[c.outcome].toLowerCase()}`,
+        ),
       ),
     )
   }
@@ -219,7 +227,11 @@ function evaluateWithdrawalPattern(context: RuleContext): RuleEvaluation {
     evidence: matches.map((c) =>
       commitmentEvidence(
         c,
-        `${c.type} (${c.importance}) ${c.outcome}: ${(c.reasons ?? []).join(', ')}`,
+        `${c.type} (${c.importance}) ${COMMITMENT_OUTCOME_LABELS[c.outcome].toLowerCase()}: ${(
+          c.reasons ?? []
+        )
+          .map((r) => COMMITMENT_REASON_LABELS[r].toLowerCase())
+          .join(', ')}`,
       ),
     ),
   }
@@ -243,7 +255,11 @@ function evaluateEssentialCommitmentMissed(context: RuleContext): RuleEvaluation
     evidence: matches.map((c) =>
       commitmentEvidence(
         c,
-        `${c.title ?? c.type} ${c.outcome}: ${(c.reasons ?? []).join(', ')}`,
+        `${c.title ?? c.type} ${COMMITMENT_OUTCOME_LABELS[c.outcome].toLowerCase()}: ${(
+          c.reasons ?? []
+        )
+          .map((r) => COMMITMENT_REASON_LABELS[r].toLowerCase())
+          .join(', ')}`,
       ),
     ),
   }
@@ -382,7 +398,7 @@ function evaluateObserverConcern(context: RuleContext): RuleEvaluation {
     evidence: matches.map((o) => ({
       date: o.observationDate,
       source: 'observer-report' as const,
-      description: `${o.observerLabel}: concern level ${o.concern}`,
+      description: `${o.observerLabel}: concern level ${OBSERVER_CONCERN_LABELS[o.concern].toLowerCase()}`,
     })),
   }
 }

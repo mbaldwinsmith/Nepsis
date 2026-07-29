@@ -280,6 +280,214 @@ button {
   border-color: var(--color-accent);
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline__item {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.timeline__rail {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--space-4);
+}
+
+.timeline__node {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.timeline__connector {
+  flex: 1;
+  width: 2px;
+  min-height: var(--space-4);
+  background: var(--color-hair);
+  margin-top: var(--space-1);
+}
+
+.timeline__content {
+  flex: 1;
+  padding-bottom: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .metric-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.bottom-nav {
+  display: flex;
+}
+
+.left-rail {
+  display: none;
+}
+
+/* Keep in sync with --desktop-breakpoint in tokens.css (custom properties
+   can't be used inside media query conditions). */
+@media (min-width: 900px) {
+  .bottom-nav {
+    display: none;
+  }
+
+  .left-rail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--rail-width);
+    padding: var(--space-5) var(--space-4);
+    border-right: 1px solid var(--color-border);
+    background: var(--color-surface);
+    overflow-y: auto;
+  }
+
+  .page:not(.page--narrow) {
+    max-width: 900px;
+    margin-left: calc(var(--rail-width) + var(--space-6));
+    margin-right: auto;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+
+  .page--narrow {
+    margin-left: calc(var(--rail-width) + var(--space-6));
+    margin-right: auto;
+    max-width: 640px;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+}
+
+@media (min-width: 1200px) {
+  .page:not(.page--narrow) {
+    max-width: 1100px;
+  }
+}
+
+.left-rail__brand {
+  font-weight: 700;
+  font-size: var(--text-title);
+  margin: 0 0 var(--space-2);
+}
+
+.left-rail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.left-rail__divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+}
+
+.left-rail__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.left-rail__link--active {
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.check-in__header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--color-bg);
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-3);
+}
+
+.check-in__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.check-in__step-label {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.check-in__progress {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: var(--space-2);
+}
+
+.check-in__progress-bar {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width var(--motion-duration) ease;
+}
+
+.check-in__nav {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.check-in__nav .btn {
+  flex: 1;
+}
+
 .segmented-endpoints {
   display: flex;
   justify-content: space-between;

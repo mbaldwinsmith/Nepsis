@@ -109,19 +109,31 @@ Nepsis aims for WCAG 2.2 AA where practical: keyboard-accessible controls, visib
 
 ### Daily self-check-in
 
-The daily check-in takes roughly one to two minutes.
+The daily check-in is a 12-step stepped flow, each step answerable in one or
+two taps, followed by a review screen before saving. A sticky header shows
+`Step n of 12`, a back control, and `Save & close`, so a partial check-in can
+be saved and resumed at any point.
 
-Sections:
+Steps:
 
-1. Sleep
-2. Mood and activation
-3. Personal warning signs
-4. Daily rhythm
-5. Appetite and satiety
-6. Medication and side effects
-7. Optional note
+1. Sleep — last night
+2. Sleep — falling asleep and waking
+3. Sleep — daytime rest
+4. Mood — how today felt
+5. Mood — pace and drive
+6. Personal warning signs
+7. Daily rhythm — alcohol
+8. Daily rhythm — other people
+9. Appetite — eating
+10. Appetite — urges
+11. Medication and side effects
+12. Optional note
 
-The app allows partial entries and later editing.
+The final review step lists what was recorded per step, with an `Edit` link
+back to any step and an explicit `Not recorded` for anything left blank —
+skipped fields are never saved as zero. Scale questions are word-labelled
+(e.g. "none" to "severe") rather than shown as raw numbers; the stored value
+underneath is unchanged. The app allows partial entries and later editing.
 
 ### Plans and cancellations
 
@@ -187,7 +199,9 @@ It must not interpret the result.
 - Dexie 4 for IndexedDB
 - Zod 4 for runtime validation
 - `vite-plugin-pwa`
-- A small plain-CSS design system (`src/styles/`) with light/dark tokens
+- A small plain-CSS design system (`src/styles/`) with light/dark tokens and
+  a single 900px breakpoint (persistent left-rail navigation instead of the
+  mobile bottom nav; the check-in flow stays single-column at every width)
 - Vitest + React Testing Library
 - Playwright + `@axe-core/playwright`
 - oxlint + Prettier
@@ -519,7 +533,7 @@ Tests must not use real personal data.
 
 ## Accessibility checklist
 
-Verified across the app (automated where noted, otherwise by manual review — see `e2e/accessibility.spec.ts` and `TASKS.md` §12/§15):
+Verified across the app (automated where noted, otherwise by manual review — see `e2e/accessibility.spec.ts` and `TASKS.md` §12/§15/§16):
 
 - all form controls have labels;
 - all scale controls work with a keyboard;
@@ -534,6 +548,12 @@ Verified across the app (automated where noted, otherwise by manual review — s
 - core flows work with a screen reader;
 - core flows work at 320 px width;
 - every route passes an automated axe check with zero violations, across both desktop and mobile viewports.
+
+Re-verified after the Phase 16 presentation overhaul (12-step check-in,
+word-labelled scales, trends small multiples, 900px desktop layout): the
+axe sweep in `e2e/accessibility.spec.ts` now also visits all 12 check-in
+steps, the review screen, and the trends compare card with metrics
+selected, with zero violations on every one.
 
 ## Language and tone
 
