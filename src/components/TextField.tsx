@@ -8,6 +8,7 @@ interface TextFieldProps {
   type?: 'text' | 'date' | 'time' | 'number' | 'datetime-local' | 'password'
   multiline?: boolean
   min?: number
+  max?: string
   step?: number
   required?: boolean
 }
@@ -20,6 +21,7 @@ export function TextField({
   type = 'text',
   multiline = false,
   min,
+  max,
   step,
   required,
 }: TextFieldProps) {
@@ -44,6 +46,7 @@ export function TextField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           min={min}
+          max={max}
           step={step}
           required={required}
         />

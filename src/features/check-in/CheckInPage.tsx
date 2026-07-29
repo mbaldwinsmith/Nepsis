@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useToast } from '../../components/toastContext'
 import { TextField } from '../../components/TextField'
 import { useDailyCheckIn } from './useDailyCheckIn'
@@ -16,15 +16,34 @@ import { SocialActivitySection } from './sections/SocialActivitySection'
 import { AppetiteEatingSection } from './sections/AppetiteEatingSection'
 import { AppetiteUrgesSection } from './sections/AppetiteUrgesSection'
 import { MedicationEffectsSection } from './sections/MedicationEffectsSection'
-import { todayIsoDate } from '../../utils/date'
+import { todayIsoDate, formatIsoDateLong, isValidIsoDate } from '../../utils/date'
 
 const TOTAL_STEPS = checkInSteps.length
 
 export function CheckInPage() {
-  const entryDate = todayIsoDate()
-  const { draft, setDraft, existing, loading, save } = useDailyCheckIn(entryDate)
+  const { date: requestedDate } = useParams<{ date?: string }>()
   const { showToast } = useToast()
   const navigate = useNavigate()
+  const today = todayIsoDate()
+  const requestedDateIsUsable =
+    !requestedDate || (isValidIsoDate(requestedDate) && requestedDate <= today)
+  const entryDate = requestedDate && requestedDateIsUsable ? requestedDate : today
+
+  const redirectedFromRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (
+      requestedDate &&
+      !requestedDateIsUsable &&
+      redirectedFromRef.current !== requestedDate
+    ) {
+      redirectedFromRef.current = requestedDate
+      showToast("That date isn't available; showing today instead.", 'error')
+      navigate('/check-in', { replace: true })
+    }
+  }, [requestedDate, requestedDateIsUsable, showToast, navigate])
+
+  const { draft, setDraft, existing, loading, save } = useDailyCheckIn(entryDate)
   const [stepIndex, setStepIndex] = useState(0)
   const [saving, setSaving] = useState(false)
   const stepContentRef = useRef<HTMLDivElement>(null)
@@ -166,8 +185,15 @@ export function CheckInPage() {
 
   return (
     <div className="page page--narrow stack check-in">
-      <h1 className="visually-hidden">Daily check-in</h1>
+      <h1 className="visually-hidden">
+        {entryDate === today
+          ? 'Daily check-in'
+          : `Daily check-in for ${formatIsoDateLong(entryDate)}`}
+      </h1>
       <div className="check-in__header">
+        {entryDate !== today && (
+          <p className="check-in__date-banner">Editing {formatIsoDateLong(entryDate)}</p>
+        )}
         <div className="check-in__header-row">
           {stepIndex > 0 ? (
             <button type="button" className="btn" onClick={goBack}>
