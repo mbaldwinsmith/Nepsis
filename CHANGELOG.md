@@ -9,6 +9,8 @@ version numbers still increase monotonically and are shown in
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-07-29
+
 ### Changed
 
 - Presentation-only overhaul of the interface: word-labelled scales in place
