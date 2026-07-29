@@ -1,6 +1,7 @@
 import type { EventMarker, TrendSeries } from '../features/trends/useTrendData'
 import { addDays, daysBetween, enumerateDates } from '../utils/dateWindows'
 import { formatIsoDateForDisplay } from '../utils/date'
+import { toValueSegments } from '../utils/chartSegments'
 
 interface Props {
   series: TrendSeries[]
@@ -27,23 +28,6 @@ const PLOT_HEIGHT = HEIGHT - PADDING_TOP - PADDING_BOTTOM
 
 function round(value: number): number {
   return Math.round(value * 10) / 10
-}
-
-function toSegments(
-  points: { date: string; value: number | undefined }[],
-): { date: string; value: number }[][] {
-  const segments: { date: string; value: number }[][] = []
-  let current: { date: string; value: number }[] = []
-  for (const point of points) {
-    if (point.value === undefined) {
-      if (current.length) segments.push(current)
-      current = []
-    } else {
-      current.push({ date: point.date, value: point.value })
-    }
-  }
-  if (current.length) segments.push(current)
-  return segments
 }
 
 /**
@@ -133,7 +117,7 @@ export function TrendChart({ series, events, rangeStart, rangeEnd }: Props) {
         {series.map((s, sIndex) => {
           const color = SERIES_COLORS[sIndex % SERIES_COLORS.length]
           const dash = SERIES_DASH[sIndex % SERIES_DASH.length]
-          const segments = toSegments(s.points)
+          const segments = toValueSegments(s.points)
 
           return (
             <g key={s.key}>
