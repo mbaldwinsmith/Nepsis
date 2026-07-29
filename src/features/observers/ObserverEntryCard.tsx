@@ -24,7 +24,7 @@ function UrgentSafetyPlanActions() {
         borderLeft: '4px solid var(--color-urgent)',
         background: 'var(--color-urgent-bg)',
         padding: 'var(--space-3)',
-        borderRadius: 'var(--radius-sm)',
+        borderRadius: 'var(--radius-md)',
       }}
     >
       <strong style={{ color: 'var(--color-urgent)' }}>
