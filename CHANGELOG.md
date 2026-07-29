@@ -7,6 +7,21 @@ Nepsis does not yet follow Semantic Versioning strictly (it is pre-1.0), but
 version numbers still increase monotonically and are shown in
 **Settings → Nepsis v_x.y.z_**.
 
+## [Unreleased]
+
+### Changed
+
+- Presentation-only overhaul of the interface: word-labelled scales in place
+  of raw numbers; the daily self-check-in is now a 12-step flow with a
+  review screen, instead of one long form; Home is built around a single
+  primary action and a "Last seven days" sparkline card; Trends adds a
+  small-multiples grid covering all sixteen metrics; a persistent left-rail
+  navigation appears at ≥900px alongside the existing mobile layout.
+  **No data model changed**: `SCHEMA_VERSION` and `BACKUP_FORMAT_VERSION`
+  are unchanged, no migration was added, every field reachable before this
+  change remains reachable, and a backup taken before the overhaul restores
+  cleanly after it.
+
 ## [0.1.0] — 2026-07-28
 
 Initial MVP release. Nepsis is a local-first Progressive Web App for
