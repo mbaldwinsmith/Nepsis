@@ -71,7 +71,7 @@ Nepsis records these signals separately and presents them transparently. It does
 
 Personal records are stored in IndexedDB in the user’s browser.
 
-The MVP has:
+Nepsis has:
 
 - no account requirement;
 - no cloud sync;
@@ -83,13 +83,13 @@ The MVP has:
 
 ### Calm, not gamified
 
-Nepsis should feel watchful rather than judgmental. It avoids streaks, badges, points, guilt language, alarmist colours, and labels such as “failed”, “flaky”, or “non-compliant”.
+Nepsis feels watchful rather than judgmental. It avoids streaks, badges, points, guilt language, alarmist colours, and labels such as “failed”, “flaky”, or “non-compliant”.
 
 Missing data remains missing. It is never silently treated as a healthy value.
 
 ### Transparent
 
-Every review prompt must show:
+Every review prompt shows:
 
 - the rule that triggered;
 - the date range;
@@ -103,13 +103,13 @@ The app supports individual baselines and warning signs rather than assuming tha
 
 ### Accessible
 
-The MVP should aim for WCAG 2.2 AA where practical, including keyboard-accessible controls, visible focus states, semantic structure, screen-reader labels, reduced-motion support, non-colour indicators, and text alternatives for charts.
+Nepsis aims for WCAG 2.2 AA where practical: keyboard-accessible controls, visible focus states, semantic structure, screen-reader labels, reduced-motion support, non-colour indicators, and text alternatives for charts.
 
 ## Core flows
 
 ### Daily self-check-in
 
-The daily check-in should take roughly one to two minutes.
+The daily check-in takes roughly one to two minutes.
 
 Sections:
 
@@ -121,7 +121,7 @@ Sections:
 6. Medication and side effects
 7. Optional note
 
-The app should allow partial entries and later editing.
+The app allows partial entries and later editing.
 
 ### Plans and cancellations
 
@@ -149,13 +149,13 @@ Observer entries may include perceived mood, speech, activity, irritability, res
 
 The timeline can combine medication starts and stops, dose increases and reductions, delayed or missed doses, clinician appointments, blood tests, illness, major stress, and custom events.
 
-The interface must always make clear:
+The interface always makes clear:
 
 > Only change medication according to the plan agreed with your prescriber.
 
 ### Health measurements
 
-The MVP supports:
+Nepsis supports:
 
 - weight;
 - waist circumference;
@@ -173,7 +173,7 @@ The MVP supports:
 - LDL;
 - triglycerides.
 
-Reference ranges are entered from the laboratory report. When a value falls outside the supplied range, the app may say:
+Reference ranges are entered from the laboratory report. When a value falls outside the supplied range, the app says:
 
 > Outside the supplied reference range — discuss with your clinician.
 
@@ -303,7 +303,7 @@ var name in `vite.config.ts` and the workflow accordingly.
 
 ## Environment configuration
 
-The local-first MVP should not require secrets or a backend.
+Nepsis does not require secrets or a backend.
 
 Do not add environment variables for analytics, advertising, user tracking, cloud databases, remote error reporting, or AI services.
 
@@ -315,7 +315,7 @@ Never commit secrets or real health data.
 
 Structured personal data is stored locally using Dexie over IndexedDB.
 
-Presentation components should not call Dexie directly. Use repository or service functions so that validation remains centralised, migrations remain manageable, and persistence logic stays out of UI code.
+Presentation components never call Dexie directly — they go through repository functions (`src/data/repositories/`), which keep validation centralised, migrations manageable, and persistence logic out of UI code.
 
 ### Schema versioning
 
@@ -369,15 +369,15 @@ Primary entities include:
 - `SafetyPlan`
 - `AlertRule`
 
-All persisted entities should be validated with Zod before saving.
+All persisted entities are validated with Zod before saving.
 
 ## Review-rule engine
 
 Review prompts are deterministic and inspectable.
 
-A rule should include a stable identifier, label, description, enabled state, severity, lookback period, transparent conditions, action text, source, and version metadata.
+Each rule includes a stable identifier, label, description, enabled state, severity, lookback period, transparent conditions, action text, source, and version metadata.
 
-Example patterns may include:
+The shipped default rules include patterns such as:
 
 - reduced sleep plus increased activation;
 - a change in normal lunchtime nap need;
@@ -412,24 +412,24 @@ Prohibited wording:
 
 ### Default privacy model
 
-The MVP should store personal data locally, make no unnecessary external requests, use no remote fonts, and include no analytics or trackers.
+Nepsis stores personal data locally, makes no unnecessary external requests, uses no remote fonts, and includes no analytics or trackers.
 
 ### Device security
 
 Local browser storage is not a replacement for device encryption or a secure screen lock.
 
-An optional privacy curtain may hide the interface when the app resumes, but it must not be described as database encryption.
+An optional privacy curtain hides the interface when the app resumes, if enabled, but it must not be described as database encryption.
 
 ### CSV export
 
-CSV export should allow the user to choose:
+CSV export lets the user choose:
 
 - date range;
 - included data categories;
 - whether free-text notes are included;
 - whether observer labels are included.
 
-Exports should use ISO dates, explicit units, separate files or clearly namespaced columns, and a data dictionary.
+Exports use ISO dates, explicit units, separate files per category, and an accompanying data dictionary.
 
 ### Encrypted backup
 
@@ -455,11 +455,11 @@ Do not describe the encryption as “military-grade”.
 
 ### Delete all data
 
-Deletion should remove IndexedDB records, local preferences, and cached personal data held by the app. The app cannot delete files the user has already exported to their device.
+Deletion removes IndexedDB records, local preferences, and cached personal data held by the app. The app cannot delete files the user has already exported to their device.
 
 ## Offline and PWA behaviour
 
-After the first successful online visit, the core app should work offline.
+After the first successful online visit, the core app works offline.
 
 Offline-capable flows include:
 
@@ -519,7 +519,7 @@ Tests must not use real personal data.
 
 ## Accessibility checklist
 
-Before release, verify:
+Verified across the app (automated where noted, otherwise by manual review — see `e2e/accessibility.spec.ts` and `TASKS.md` §12/§15):
 
 - all form controls have labels;
 - all scale controls work with a keyboard;
@@ -532,7 +532,8 @@ Before release, verify:
 - the app works with reduced motion;
 - the app remains usable at 200% zoom;
 - core flows work with a screen reader;
-- core flows work at 320 px width.
+- core flows work at 320 px width;
+- every route passes an automated axe check with zero violations, across both desktop and mobile viewports.
 
 ## Language and tone
 
@@ -579,9 +580,9 @@ The app should be compassionate without becoming vague.
 
 ## Seed data
 
-Development fixtures should be realistic but fictional.
+Development fixtures (`src/data/seed.ts`) are realistic but fictional.
 
-Include examples of:
+They include examples of:
 
 - a stable baseline;
 - a possible activation pattern;
@@ -661,8 +662,6 @@ These are intentional MVP boundaries rather than hidden shortcomings.
 
 ## Contributing
 
-Until a separate contribution guide exists:
-
 - open an issue before large architectural changes;
 - keep pull requests focused;
 - include tests;
@@ -677,19 +676,16 @@ Any proposed feature that could change the app from a personal tracker into a cl
 
 ## Licence
 
-No licence has yet been selected.
+Nepsis is licensed under the GNU General Public License v3.0, or (at your option) any later version — see [`LICENSE`](./LICENSE) for the full text.
 
-Until a licence file is added, all rights are reserved by the project owner and the repository should not be assumed to be open source.
+This means anyone may use, study, share, and modify Nepsis, provided that modified or redistributed versions remain under the same licence and make their source available.
 
 ## Documentation
 
 - [`TASKS.md`](./TASKS.md) — full MVP implementation and polish plan
 - [`CHANGELOG.md`](./CHANGELOG.md) — release history
+- [`LICENSE`](./LICENSE) — GNU General Public License v3.0
 - `README.md` — project overview and development guide
-- Future:
-  - `CONTRIBUTING.md`
-  - `PRIVACY.md`
-  - `SECURITY.md`
 
 ## Final principle
 
