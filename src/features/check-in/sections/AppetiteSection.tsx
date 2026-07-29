@@ -1,6 +1,12 @@
 import { ScaleInput } from '../../../components/ScaleInput'
 import { CheckboxField } from '../../../components/CheckboxField'
 import { TextField } from '../../../components/TextField'
+import {
+  VERY_LOW_TO_VERY_HIGH,
+  NONE_TO_CONSTANT,
+  NOT_SATISFIED_TO_FULLY_SATISFIED,
+  NONE_TO_SEVERE,
+} from '../../../utils/scaleWords'
 import type { Appetite, Urges } from '../../../data/schemas'
 
 interface Props {
@@ -28,6 +34,7 @@ export function AppetiteSection({
         onChange={(v) => onChangeAppetite({ ...appetite, appetite: v })}
         minLabel="Very low"
         maxLabel="Very high"
+        words={VERY_LOW_TO_VERY_HIGH}
       />
       <ScaleInput
         legend="Hunger between meals"
@@ -38,6 +45,7 @@ export function AppetiteSection({
         onChange={(v) => onChangeAppetite({ ...appetite, hungerBetweenMeals: v })}
         minLabel="None"
         maxLabel="Constant"
+        words={NONE_TO_CONSTANT}
       />
       <ScaleInput
         legend="Satiety after a normal meal"
@@ -48,6 +56,7 @@ export function AppetiteSection({
         onChange={(v) => onChangeAppetite({ ...appetite, satietyAfterNormalMeal: v })}
         minLabel="Not satisfied"
         maxLabel="Fully satisfied"
+        words={NOT_SATISFIED_TO_FULLY_SATISFIED}
       />
       <ScaleInput
         legend="Food preoccupation or cravings"
@@ -60,6 +69,7 @@ export function AppetiteSection({
         }
         minLabel="None"
         maxLabel="Constant"
+        words={NONE_TO_CONSTANT}
       />
       <CheckboxField
         label="Binge or loss-of-control eating"
@@ -82,6 +92,7 @@ export function AppetiteSection({
         onChange={(v) => onChangeUrges({ ...urges, spendingUrge: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Gambling urge"
@@ -92,6 +103,7 @@ export function AppetiteSection({
         onChange={(v) => onChangeUrges({ ...urges, gamblingUrge: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Unusually increased sexual drive"
@@ -102,6 +114,7 @@ export function AppetiteSection({
         onChange={(v) => onChangeUrges({ ...urges, sexualDriveIncrease: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <TextField
         label="Other repetitive or compulsive urge (optional)"

@@ -1,6 +1,10 @@
 import { ScaleInput } from '../../../components/ScaleInput'
 import { SegmentedControl } from '../../../components/SegmentedControl'
 import { TextField } from '../../../components/TextField'
+import {
+  NONE_TO_A_GREAT_DEAL,
+  MUCH_LESS_TO_MUCH_MORE_DRIVEN,
+} from '../../../utils/scaleWords'
 import type { Alcohol, Social, SocialInteractionType } from '../../../data/schemas'
 
 interface Props {
@@ -97,6 +101,7 @@ export function DailyRhythmSection({
         onChange={(v) => onChangeSocial({ ...social, activityAmount: v })}
         minLabel="None"
         maxLabel="A great deal"
+        words={NONE_TO_A_GREAT_DEAL}
         hint="How much social contact you actually had today."
       />
       <ScaleInput
@@ -108,6 +113,7 @@ export function DailyRhythmSection({
         onChange={(v) => onChangeSocial({ ...social, socialDrive: v })}
         minLabel="Much less driven"
         maxLabel="Much more driven"
+        words={MUCH_LESS_TO_MUCH_MORE_DRIVEN}
         hint="How driven or pulled toward social contact you felt — this can differ from how much you actually did."
       />
       <SegmentedControl
