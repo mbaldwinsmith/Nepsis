@@ -34,3 +34,44 @@ for (const path of CORE_ROUTES) {
     expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
   })
 }
+
+test('no automated accessibility violations on any of the 12 check-in steps or the review screen', async ({
+  page,
+}) => {
+  await page.goto('/#/check-in')
+  await expect(page.getByText('Step 1 of 12')).toBeVisible()
+
+  for (let step = 1; step <= 12; step++) {
+    await expect(page.getByText(`Step ${step} of 12`)).toBeVisible()
+    const results = await new AxeBuilder({ page }).analyze()
+    expect(
+      results.violations,
+      `Step ${step}: ${JSON.stringify(results.violations, null, 2)}`,
+    ).toEqual([])
+    await page.getByRole('button', { name: /^(Continue|Review)$/ }).click()
+  }
+
+  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible()
+  const reviewResults = await new AxeBuilder({ page }).analyze()
+  expect(
+    reviewResults.violations,
+    JSON.stringify(reviewResults.violations, null, 2),
+  ).toEqual([])
+})
+
+test('no automated accessibility violations on the trends compare card with metrics selected', async ({
+  page,
+}) => {
+  await page.goto('/#/trends')
+  await expect(page.getByRole('img', { name: /Trend chart for/ })).toBeVisible()
+
+  // Swap out a metric to exercise the compare card's chip-selection state,
+  // not just its default rendering. The checkbox inputs are visually hidden
+  // in favour of their styled <label>, so click the visible label text.
+  await page.getByText('Sleep duration', { exact: true }).click()
+  await page.getByText('Weight', { exact: true }).click()
+  await expect(page.getByRole('img', { name: /Trend chart for/ })).toBeVisible()
+
+  const results = await new AxeBuilder({ page }).analyze()
+  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([])
+})

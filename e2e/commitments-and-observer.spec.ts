@@ -47,6 +47,6 @@ test('submits an observer entry and it appears in the app without console errors
   await page.getByRole('button', { name: 'Save observation' }).click()
 
   await expect(page.getByText('Observer: Friend A')).toBeVisible()
-  await expect(page.getByText('Concern: keepWatching')).toBeVisible()
+  await expect(page.getByText('Concern: Keep watching')).toBeVisible()
   expect(errors).toEqual([])
 })

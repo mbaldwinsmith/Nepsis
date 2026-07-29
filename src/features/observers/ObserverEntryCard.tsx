@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom'
 import { safetyPlanRepository } from '../../data/repositories'
 import type { ObserverEntry, SafetyPlan } from '../../data/schemas'
 import { formatIsoDateForDisplay } from '../../utils/date'
+import {
+  PERCEIVED_MOOD_LABELS,
+  OBSERVED_SPEECH_LABELS,
+  OBSERVED_ACTIVITY_LABELS,
+  OBSERVER_CONCERN_LABELS,
+} from '../../utils/enumLabels'
 
 function UrgentSafetyPlanActions() {
   const [plan, setPlan] = useState<SafetyPlan | undefined>()
@@ -71,25 +77,25 @@ export function ObserverEntryCard({ entry }: { entry: ObserverEntry }) {
         {entry.perceivedMood && (
           <>
             <dt className="hint">Mood</dt>
-            <dd style={{ margin: 0 }}>{entry.perceivedMood}</dd>
+            <dd style={{ margin: 0 }}>{PERCEIVED_MOOD_LABELS[entry.perceivedMood]}</dd>
           </>
         )}
         {entry.speech && (
           <>
             <dt className="hint">Speech</dt>
-            <dd style={{ margin: 0 }}>{entry.speech}</dd>
+            <dd style={{ margin: 0 }}>{OBSERVED_SPEECH_LABELS[entry.speech]}</dd>
           </>
         )}
         {entry.activity && (
           <>
             <dt className="hint">Activity</dt>
-            <dd style={{ margin: 0 }}>{entry.activity}</dd>
+            <dd style={{ margin: 0 }}>{OBSERVED_ACTIVITY_LABELS[entry.activity]}</dd>
           </>
         )}
       </dl>
       {entry.note && <p style={{ margin: 0 }}>{entry.note}</p>}
       <p className="hint" style={{ margin: 0 }}>
-        Concern: {entry.concern}
+        Concern: {OBSERVER_CONCERN_LABELS[entry.concern]}
       </p>
       {entry.concern === 'urgent' && <UrgentSafetyPlanActions />}
     </div>

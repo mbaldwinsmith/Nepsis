@@ -8,6 +8,7 @@ import type {
   MedicationEntryStatus,
 } from '../../data/schemas'
 import { nowIsoDateTime } from '../../utils/date'
+import { MEDICATION_ENTRY_STATUS_LABELS } from '../../utils/enumLabels'
 
 interface Props {
   definitions: MedicationDefinition[]
@@ -101,7 +102,7 @@ export function DoseLog({ definitions, entries, onCreate }: Props) {
             return (
               <li key={entry.id} className="hint">
                 {new Date(entry.takenAt).toLocaleString()} — {def?.name ?? 'Unknown'} —{' '}
-                {entry.status}
+                {MEDICATION_ENTRY_STATUS_LABELS[entry.status]}
               </li>
             )
           })}
