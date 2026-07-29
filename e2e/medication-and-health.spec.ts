@@ -5,12 +5,14 @@ test('adds a medication, logs a dose, and records a dose-change transition event
 }) => {
   await page.goto('/#/medication')
 
+  await page.getByText('+ Add a medication').click()
   await page.getByLabel('Medication name').fill('Sample medication A')
   await page.getByRole('button', { name: 'Add medication' }).click()
   await expect(
     page.getByRole('listitem').filter({ hasText: 'Sample medication A' }),
   ).toBeVisible()
 
+  await page.getByText('+ Log a dose').click()
   await page
     .getByRole('radiogroup', { name: 'Status' })
     .getByText('Taken', { exact: true })
@@ -20,6 +22,7 @@ test('adds a medication, logs a dose, and records a dose-change transition event
     page.locator('li.hint').filter({ hasText: 'Sample medication A' }),
   ).toBeVisible()
 
+  await page.getByText('+ Add an event').click()
   await page
     .getByRole('radiogroup', { name: 'Event type' })
     .getByText('Dose increased', { exact: true })
@@ -34,6 +37,7 @@ test('adds a medication, logs a dose, and records a dose-change transition event
 test('records a weight measurement and a liver-function result', async ({ page }) => {
   await page.goto('/#/health')
 
+  await page.getByText('+ Add a measurement').click()
   await page.getByLabel('Value').fill('78.2')
   await page.getByRole('button', { name: 'Save measurement' }).click()
   await expect(page.getByText('78.2 kg')).toBeVisible()

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SegmentedControl } from '../../components/SegmentedControl'
 import { TextField } from '../../components/TextField'
+import { AddDisclosure } from '../../components/AddDisclosure'
 import type { TransitionEvent, TransitionEventType } from '../../data/schemas'
 import { nowIsoDateTime } from '../../utils/date'
 
@@ -56,28 +57,30 @@ export function TransitionTimeline({ events, onCreate }: Props) {
           ))}
         </ol>
       )}
-      <form className="stack" onSubmit={handleSubmit}>
-        <SegmentedControl
-          legend="Event type"
-          name="transitionEventType"
-          options={Object.entries(typeLabels).map(([value, label]) => ({
-            value: value as TransitionEventType,
-            label,
-          }))}
-          value={type}
-          onChange={setType}
-        />
-        <TextField label="Title" value={title} onChange={setTitle} required />
-        <TextField
-          label="When"
-          type="datetime-local"
-          value={occurredAt}
-          onChange={setOccurredAt}
-        />
-        <button type="submit" className="btn btn-primary">
-          Add event
-        </button>
-      </form>
+      <AddDisclosure label="+ Add an event">
+        <form className="stack" onSubmit={handleSubmit}>
+          <SegmentedControl
+            legend="Event type"
+            name="transitionEventType"
+            options={Object.entries(typeLabels).map(([value, label]) => ({
+              value: value as TransitionEventType,
+              label,
+            }))}
+            value={type}
+            onChange={setType}
+          />
+          <TextField label="Title" value={title} onChange={setTitle} required />
+          <TextField
+            label="When"
+            type="datetime-local"
+            value={occurredAt}
+            onChange={setOccurredAt}
+          />
+          <button type="submit" className="btn btn-primary">
+            Add event
+          </button>
+        </form>
+      </AddDisclosure>
     </section>
   )
 }

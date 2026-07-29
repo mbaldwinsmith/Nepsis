@@ -5,6 +5,7 @@ test('records a commitment and marks it cancelled for distress-related reasons',
 }) => {
   await page.goto('/#/commitments')
 
+  await page.getByText('+ Add a plan').click()
   await page.getByLabel('Title (optional)').fill('Lunch with a friend')
   await page
     .getByRole('radiogroup', { name: 'Type' })
