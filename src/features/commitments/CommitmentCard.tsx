@@ -1,4 +1,5 @@
 import { SegmentedControl } from '../../components/SegmentedControl'
+import { ChipMultiSelect } from '../../components/ChipMultiSelect'
 import { TextField } from '../../components/TextField'
 import type {
   SocialCommitment,
@@ -6,13 +7,17 @@ import type {
   CommitmentReason,
 } from '../../data/schemas'
 import { formatIsoDateForDisplay } from '../../utils/date'
+import {
+  COMMITMENT_TYPE_LABELS,
+  COMMITMENT_IMPORTANCE_LABELS,
+} from '../../utils/enumLabels'
 
 interface Props {
   commitment: SocialCommitment
   onUpdate: (commitment: SocialCommitment) => void
 }
 
-const outcomeButtons: { value: CommitmentOutcome; label: string }[] = [
+const outcomeOptions: { value: CommitmentOutcome; label: string }[] = [
   { value: 'attended', label: 'Attended' },
   { value: 'attendedBriefly', label: 'Attended briefly' },
   { value: 'postponed', label: 'Postponed' },
@@ -47,48 +52,25 @@ export function CommitmentCard({ commitment, onUpdate }: Props) {
     })
   }
 
-  function toggleReason(reason: CommitmentReason) {
-    const current = commitment.reasons ?? []
-    const next = current.includes(reason)
-      ? current.filter((r) => r !== reason)
-      : [...current, reason]
-    onUpdate({ ...commitment, reasons: next.length ? next : undefined })
-  }
-
   return (
     <div className="card stack">
       <div>
-        <strong>{commitment.title || commitment.type}</strong>
+        <strong>{commitment.title || COMMITMENT_TYPE_LABELS[commitment.type]}</strong>
         <p className="hint" style={{ margin: 0 }}>
-          {formatIsoDateForDisplay(commitment.plannedDate)} · {commitment.type} ·{' '}
-          {commitment.importance}
+          {formatIsoDateForDisplay(commitment.plannedDate)} ·{' '}
+          {COMMITMENT_TYPE_LABELS[commitment.type]} ·{' '}
+          {COMMITMENT_IMPORTANCE_LABELS[commitment.importance]}
         </p>
       </div>
 
-      <p className="hint" style={{ margin: 0 }}>
-        "Postponed", "Cancelled", and "Did not attend" ask for an optional reason;
-        "Attended" and "Attended briefly" don't.
-      </p>
-      <div className="segmented" role="group" aria-label="Outcome">
-        {outcomeButtons.map((btn) => (
-          <button
-            key={btn.value}
-            type="button"
-            className="btn"
-            style={
-              commitment.outcome === btn.value
-                ? {
-                    background: 'var(--color-accent)',
-                    color: 'var(--color-accent-contrast)',
-                  }
-                : undefined
-            }
-            onClick={() => setOutcome(btn.value)}
-          >
-            {btn.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        legend="Outcome"
+        name={`outcome-${commitment.id}`}
+        options={outcomeOptions}
+        value={commitment.outcome}
+        onChange={setOutcome}
+        hint={`"Postponed", "Cancelled", and "Did not attend" ask for an optional reason; "Attended" and "Attended briefly" don't.`}
+      />
 
       {needsDetail && (
         <div className="stack">
@@ -100,29 +82,16 @@ export function CommitmentCard({ commitment, onUpdate }: Props) {
           <p className="hint">
             Cancelling plans may be a sign that things feel harder right now.
           </p>
-          <fieldset className="field" style={{ border: 'none', padding: 0, margin: 0 }}>
-            <legend style={{ fontWeight: 600 }}>Reason (select any that apply)</legend>
-            <p className="hint">
-              Choosing "Healthy boundary" tells Nepsis this wasn't distress-related, so it
-              isn't grouped with the other reasons when looking for patterns.
-            </p>
-            <div className="stack">
-              {reasonOptions.map((r) => (
-                <label
-                  key={r.value}
-                  style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={(commitment.reasons ?? []).includes(r.value)}
-                    onChange={() => toggleReason(r.value)}
-                    style={{ width: '20px', height: '20px' }}
-                  />
-                  {r.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <ChipMultiSelect
+            legend="Reason (select any that apply)"
+            name={`reasons-${commitment.id}`}
+            options={reasonOptions}
+            values={commitment.reasons ?? []}
+            onChange={(reasons) =>
+              onUpdate({ ...commitment, reasons: reasons.length ? reasons : undefined })
+            }
+            hint={`Choosing "Healthy boundary" tells Nepsis this wasn't distress-related, so it isn't grouped with the other reasons when looking for patterns.`}
+          />
           <SegmentedControl
             legend="Notice given"
             name={`notice-${commitment.id}`}

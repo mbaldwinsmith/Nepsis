@@ -286,6 +286,17 @@ button {
   gap: var(--space-4);
 }
 
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
 @media (min-width: 640px) {
   .metric-grid {
     grid-template-columns: repeat(2, 1fr);

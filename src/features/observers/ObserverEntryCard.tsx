@@ -66,33 +66,23 @@ export function ObserverEntryCard({ entry }: { entry: ObserverEntry }) {
           {formatIsoDateForDisplay(entry.observationDate)}
         </p>
       </div>
-      <dl
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 'var(--space-2)',
-          margin: 0,
-        }}
-      >
-        {entry.perceivedMood && (
-          <>
-            <dt className="hint">Mood</dt>
-            <dd style={{ margin: 0 }}>{PERCEIVED_MOOD_LABELS[entry.perceivedMood]}</dd>
-          </>
-        )}
-        {entry.speech && (
-          <>
-            <dt className="hint">Speech</dt>
-            <dd style={{ margin: 0 }}>{OBSERVED_SPEECH_LABELS[entry.speech]}</dd>
-          </>
-        )}
-        {entry.activity && (
-          <>
-            <dt className="hint">Activity</dt>
-            <dd style={{ margin: 0 }}>{OBSERVED_ACTIVITY_LABELS[entry.activity]}</dd>
-          </>
-        )}
-      </dl>
+      {(entry.perceivedMood || entry.speech || entry.activity) && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+          {entry.perceivedMood && (
+            <span className="chip">
+              Mood: {PERCEIVED_MOOD_LABELS[entry.perceivedMood]}
+            </span>
+          )}
+          {entry.speech && (
+            <span className="chip">Speech: {OBSERVED_SPEECH_LABELS[entry.speech]}</span>
+          )}
+          {entry.activity && (
+            <span className="chip">
+              Activity: {OBSERVED_ACTIVITY_LABELS[entry.activity]}
+            </span>
+          )}
+        </div>
+      )}
       {entry.note && <p style={{ margin: 0 }}>{entry.note}</p>}
       <p className="hint" style={{ margin: 0 }}>
         Concern: {OBSERVER_CONCERN_LABELS[entry.concern]}

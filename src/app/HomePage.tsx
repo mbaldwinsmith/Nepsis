@@ -90,7 +90,9 @@ export function HomePage() {
         <>
           {visibleTriggers.length > 0 && (
             <section className="stack">
-              <h2 style={{ fontSize: 'var(--text-title)' }}>Worth reviewing</h2>
+              <h2 style={{ fontSize: 'var(--text-title)' }}>
+                Worth a look, when you have a moment
+              </h2>
               {visibleTriggers.map((trigger) => {
                 const triggerKey = `${trigger.ruleId}-${trigger.dateRangeStart}-${trigger.dateRangeEnd}`
                 return (

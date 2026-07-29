@@ -4,6 +4,22 @@
  * where the raw camelCase value would otherwise leak into the UI unchanged.
  */
 
+export const COMMITMENT_TYPE_LABELS: Record<string, string> = {
+  friends: 'Friends',
+  family: 'Family',
+  work: 'Work',
+  church: 'Church',
+  appointment: 'Appointment',
+  volunteering: 'Volunteering',
+  other: 'Other',
+}
+
+export const COMMITMENT_IMPORTANCE_LABELS: Record<string, string> = {
+  routine: 'Routine',
+  meaningful: 'Meaningful',
+  essential: 'Essential',
+}
+
 export const COMMITMENT_OUTCOME_LABELS: Record<string, string> = {
   planned: 'Planned',
   attended: 'Attended',
@@ -56,4 +72,23 @@ export const MEDICATION_ENTRY_STATUS_LABELS: Record<string, string> = {
   delayed: 'Delayed',
   missed: 'Missed',
   notScheduled: 'Not scheduled',
+}
+
+export const HEALTH_MEASUREMENT_TYPE_LABELS: Record<string, string> = {
+  weight: 'Weight',
+  waistCircumference: 'Waist circumference',
+  restingPulse: 'Resting pulse',
+  systolicBloodPressure: 'Systolic blood pressure',
+  diastolicBloodPressure: 'Diastolic blood pressure',
+  alt: 'ALT',
+  ast: 'AST',
+  alp: 'ALP',
+  ggt: 'GGT',
+  bilirubin: 'Bilirubin',
+  hba1c: 'HbA1c',
+  glucose: 'Glucose',
+  totalCholesterol: 'Total cholesterol',
+  hdl: 'HDL',
+  ldl: 'LDL',
+  triglycerides: 'Triglycerides',
 }

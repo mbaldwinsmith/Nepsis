@@ -20,7 +20,7 @@ export function AlertCard({ trigger, onDismiss }: Props) {
     <div
       className="card stack"
       style={{
-        borderLeft: `4px solid ${isAct ? 'var(--color-urgent)' : 'var(--color-review)'}`,
+        borderLeft: `3px solid ${isAct ? 'var(--color-urgent)' : 'var(--color-review)'}`,
         borderRadius: 'var(--radius-lg)',
       }}
     >
@@ -34,11 +34,8 @@ export function AlertCard({ trigger, onDismiss }: Props) {
         <strong>{trigger.ruleLabel}</strong>
         <span
           style={{
-            fontSize: '0.75rem',
             fontWeight: 700,
-            padding: '2px 8px',
-            borderRadius: 'var(--radius-sm)',
-            background: isAct ? 'var(--color-urgent-bg)' : 'var(--color-review-bg)',
+            fontSize: 'var(--text-label)',
             color: isAct ? 'var(--color-urgent)' : 'var(--color-review)',
             alignSelf: 'flex-start',
           }}
