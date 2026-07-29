@@ -18,7 +18,7 @@ export function CheckInPage() {
 
   if (loading) {
     return (
-      <div className="page">
+      <div className="page page--narrow">
         <p>Loading…</p>
       </div>
     )
@@ -36,7 +36,7 @@ export function CheckInPage() {
   }
 
   return (
-    <div className="page stack">
+    <div className="page page--narrow stack">
       <div>
         <h1>Daily check-in</h1>
         <p className="hint">{formatIsoDateForDisplay(entryDate)}</p>

@@ -286,6 +286,110 @@ button {
   gap: var(--space-4);
 }
 
+@media (min-width: 640px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .metric-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.bottom-nav {
+  display: flex;
+}
+
+.left-rail {
+  display: none;
+}
+
+/* Keep in sync with --desktop-breakpoint in tokens.css (custom properties
+   can't be used inside media query conditions). */
+@media (min-width: 900px) {
+  .bottom-nav {
+    display: none;
+  }
+
+  .left-rail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--rail-width);
+    padding: var(--space-5) var(--space-4);
+    border-right: 1px solid var(--color-border);
+    background: var(--color-surface);
+    overflow-y: auto;
+  }
+
+  .page:not(.page--narrow) {
+    max-width: 900px;
+    margin-left: calc(var(--rail-width) + var(--space-6));
+    margin-right: auto;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+
+  .page--narrow {
+    margin-left: calc(var(--rail-width) + var(--space-6));
+    margin-right: auto;
+    max-width: 640px;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+}
+
+@media (min-width: 1200px) {
+  .page:not(.page--narrow) {
+    max-width: 1100px;
+  }
+}
+
+.left-rail__brand {
+  font-weight: 700;
+  font-size: var(--text-title);
+  margin: 0 0 var(--space-2);
+}
+
+.left-rail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.left-rail__divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+}
+
+.left-rail__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.left-rail__link--active {
+  background: var(--color-accent-tint);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 .segmented-endpoints {
   display: flex;
   justify-content: space-between;

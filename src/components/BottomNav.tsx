@@ -11,13 +11,13 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
+      className="bottom-nav"
       style={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
         height: 'var(--nav-height)',
-        display: 'flex',
         borderTop: '1px solid var(--color-border)',
         background: 'var(--color-surface)',
         paddingBottom: 'env(safe-area-inset-bottom)',
