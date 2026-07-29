@@ -1,4 +1,10 @@
 import { ScaleInput } from '../../../components/ScaleInput'
+import {
+  NOT_AT_ALL_TO_SEVERE,
+  NOT_AT_ALL_TO_VERY_POROUS,
+  VERY_LOW_TO_VERY_HIGH,
+  MUCH_SLOWER_TO_MUCH_FASTER,
+} from '../../../utils/scaleWords'
 import type { Mood } from '../../../data/schemas'
 
 interface Props {
@@ -23,6 +29,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('lowMood', v)}
         minLabel="Not at all"
         maxLabel="Severe"
+        words={NOT_AT_ALL_TO_SEVERE}
       />
       <ScaleInput
         legend="Elevated or expansive mood"
@@ -33,6 +40,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('elevatedMood', v)}
         minLabel="Not at all"
         maxLabel="Severe"
+        words={NOT_AT_ALL_TO_SEVERE}
       />
       <ScaleInput
         legend="Irritability"
@@ -43,6 +51,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('irritability', v)}
         minLabel="Not at all"
         maxLabel="Severe"
+        words={NOT_AT_ALL_TO_SEVERE}
       />
       <ScaleInput
         legend="Anxiety"
@@ -53,6 +62,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('anxiety', v)}
         minLabel="Not at all"
         maxLabel="Severe"
+        words={NOT_AT_ALL_TO_SEVERE}
       />
       <ScaleInput
         legend="Emotional sensitivity"
@@ -63,6 +73,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('emotionalSensitivity', v)}
         minLabel="Not at all"
         maxLabel="Very porous"
+        words={NOT_AT_ALL_TO_VERY_POROUS}
       />
       <ScaleInput
         legend="Energy"
@@ -73,6 +84,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('energy', v)}
         minLabel="Very low"
         maxLabel="Very high"
+        words={VERY_LOW_TO_VERY_HIGH}
       />
       <ScaleInput
         legend="Mental speed"
@@ -83,6 +95,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('mentalSpeed', v)}
         minLabel="Much slower"
         maxLabel="Much faster"
+        words={MUCH_SLOWER_TO_MUCH_FASTER}
       />
       <ScaleInput
         legend="Goal-directed activity"
@@ -93,6 +106,7 @@ export function MoodSection({ value, onChange }: Props) {
         onChange={(v) => set('goalDirectedActivity', v)}
         minLabel="Very low"
         maxLabel="Very high"
+        words={VERY_LOW_TO_VERY_HIGH}
       />
     </section>
   )

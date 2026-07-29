@@ -3,6 +3,7 @@ import { ScaleInput } from '../../components/ScaleInput'
 import { SegmentedControl } from '../../components/SegmentedControl'
 import { CheckboxField } from '../../components/CheckboxField'
 import { TextField } from '../../components/TextField'
+import { NONE_TO_SEVERE_SHORT } from '../../utils/scaleWords'
 import type {
   ObservedActivity,
   ObservedSpeech,
@@ -110,6 +111,7 @@ export function ObserverForm({ onCreate }: Props) {
         onChange={setIrritability}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE_SHORT}
       />
       <ScaleInput
         legend="Restlessness"
@@ -120,6 +122,7 @@ export function ObserverForm({ onCreate }: Props) {
         onChange={setRestlessness}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE_SHORT}
       />
       <CheckboxField
         label="Impulsive or uncharacteristic behaviour"

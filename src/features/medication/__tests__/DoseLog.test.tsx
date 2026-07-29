@@ -28,6 +28,7 @@ describe('DoseLog', () => {
     const onCreate = vi.fn().mockResolvedValue(undefined)
     render(<DoseLog definitions={[definition()]} entries={[]} onCreate={onCreate} />)
 
+    await userEvent.click(screen.getByText('+ Log a dose'))
     await userEvent.click(screen.getByRole('radio', { name: 'Delayed' }))
     await userEvent.click(screen.getByRole('button', { name: 'Log dose' }))
 

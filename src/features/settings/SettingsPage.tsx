@@ -4,7 +4,7 @@ import { BaselineEditor } from './BaselineEditor'
 import { DeleteAllData } from './DeleteAllData'
 import { DevSeedAction } from './DevSeedAction'
 import { usePrivacyCurtain } from './usePrivacyCurtain'
-import { CheckboxField } from '../../components/CheckboxField'
+import { ToggleField } from '../../components/ToggleField'
 
 export function SettingsPage() {
   const { baseline, loading, save } = useBaseline()
@@ -15,7 +15,7 @@ export function SettingsPage() {
       <h1>Settings</h1>
 
       <section className="card">
-        <h2 style={{ fontSize: '1rem' }}>Review rules</h2>
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Review rules</h2>
         <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
           Configure the deterministic, non-diagnostic patterns Nepsis can point out.
         </p>
@@ -25,7 +25,7 @@ export function SettingsPage() {
       </section>
 
       <section className="card">
-        <h2 style={{ fontSize: '1rem' }}>Export, backup, and restore</h2>
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Export, backup, and restore</h2>
         <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
           Export CSV files, create an encrypted backup, or restore from one.
         </p>
@@ -35,7 +35,7 @@ export function SettingsPage() {
       </section>
 
       <section className="card">
-        <h2 style={{ fontSize: '1rem' }}>Install Nepsis</h2>
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Install Nepsis</h2>
         <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
           Add Nepsis to your home screen so it works offline.
         </p>
@@ -45,7 +45,7 @@ export function SettingsPage() {
       </section>
 
       <section className="card">
-        <h2 style={{ fontSize: '1rem' }}>Privacy</h2>
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Privacy</h2>
         <p className="hint" style={{ marginBottom: 'var(--space-3)' }}>
           What Nepsis stores, where, and what export, backup, and deletion actually do.
         </p>
@@ -55,8 +55,8 @@ export function SettingsPage() {
       </section>
 
       <section className="card stack">
-        <h2 style={{ fontSize: '1rem' }}>Privacy curtain</h2>
-        <CheckboxField
+        <h2 style={{ fontSize: 'var(--text-title)' }}>Privacy curtain</h2>
+        <ToggleField
           label="Show a cover screen when returning to Nepsis"
           checked={privacyCurtainEnabled}
           onChange={setPrivacyCurtainEnabled}

@@ -29,7 +29,7 @@ function ContactList({
 
   return (
     <div className="stack">
-      <h2 style={{ fontSize: '1rem' }}>{label}</h2>
+      <h2 style={{ fontSize: 'var(--text-title)' }}>{label}</h2>
       {contacts.length === 0 && <p className="hint">None added yet.</p>}
       {contacts.map((c) => (
         <div

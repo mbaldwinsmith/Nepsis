@@ -21,6 +21,7 @@ export function AlertCard({ trigger, onDismiss }: Props) {
       className="card stack"
       style={{
         borderLeft: `4px solid ${isAct ? 'var(--color-urgent)' : 'var(--color-review)'}`,
+        borderRadius: 'var(--radius-lg)',
       }}
     >
       <div

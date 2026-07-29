@@ -43,63 +43,6 @@ export function RuleCard({ rule, onUpdate, onDuplicate }: Props) {
         />
       </div>
 
-      <TextField
-        label="Label"
-        value={rule.label}
-        onChange={(label) => onUpdate({ ...rule, label })}
-      />
-      <TextField
-        label="Description"
-        multiline
-        value={rule.description ?? ''}
-        onChange={(description) =>
-          onUpdate({ ...rule, description: description || undefined })
-        }
-      />
-      <SegmentedControl
-        legend="Severity"
-        name={`severity-${rule.id}`}
-        options={[
-          { value: 'review', label: 'Review' },
-          { value: 'act', label: 'Act' },
-        ]}
-        value={rule.severity}
-        onChange={(severity) => onUpdate({ ...rule, severity })}
-      />
-      <TextField
-        label="Lookback (days)"
-        type="number"
-        min={1}
-        value={String(rule.lookbackDays)}
-        onChange={(v) => onUpdate({ ...rule, lookbackDays: Math.max(1, Number(v) || 1) })}
-      />
-
-      {def.paramSchema.length > 0 && (
-        <fieldset className="field" style={{ border: 'none', padding: 0, margin: 0 }}>
-          <legend style={{ fontWeight: 600 }}>Thresholds</legend>
-          <div className="stack">
-            {def.paramSchema.map((spec) => (
-              <TextField
-                key={spec.key}
-                label={spec.label}
-                type="number"
-                min={spec.min}
-                step={spec.step}
-                value={String(params[spec.key])}
-                onChange={(v) => setParam(spec.key, Number(v))}
-              />
-            ))}
-          </div>
-        </fieldset>
-      )}
-
-      <TextField
-        label="Action text"
-        multiline
-        value={rule.actionText}
-        onChange={(actionText) => onUpdate({ ...rule, actionText })}
-      />
-
       <div
         className="card"
         style={{ background: 'var(--color-surface-raised)', boxShadow: 'none' }}
@@ -110,9 +53,73 @@ export function RuleCard({ rule, onUpdate, onDuplicate }: Props) {
         <p style={{ margin: 0 }}>{preview}</p>
       </div>
 
-      <button type="button" className="btn" onClick={() => onDuplicate(rule)}>
-        Duplicate
-      </button>
+      <details>
+        <summary>Edit rule</summary>
+        <div className="stack" style={{ marginTop: 'var(--space-3)' }}>
+          <TextField
+            label="Label"
+            value={rule.label}
+            onChange={(label) => onUpdate({ ...rule, label })}
+          />
+          <TextField
+            label="Description"
+            multiline
+            value={rule.description ?? ''}
+            onChange={(description) =>
+              onUpdate({ ...rule, description: description || undefined })
+            }
+          />
+          <SegmentedControl
+            legend="Severity"
+            name={`severity-${rule.id}`}
+            options={[
+              { value: 'review', label: 'Review' },
+              { value: 'act', label: 'Act' },
+            ]}
+            value={rule.severity}
+            onChange={(severity) => onUpdate({ ...rule, severity })}
+          />
+          <TextField
+            label="Lookback (days)"
+            type="number"
+            min={1}
+            value={String(rule.lookbackDays)}
+            onChange={(v) =>
+              onUpdate({ ...rule, lookbackDays: Math.max(1, Number(v) || 1) })
+            }
+          />
+
+          {def.paramSchema.length > 0 && (
+            <fieldset className="field" style={{ border: 'none', padding: 0, margin: 0 }}>
+              <legend style={{ fontWeight: 600 }}>Thresholds</legend>
+              <div className="stack">
+                {def.paramSchema.map((spec) => (
+                  <TextField
+                    key={spec.key}
+                    label={spec.label}
+                    type="number"
+                    min={spec.min}
+                    step={spec.step}
+                    value={String(params[spec.key])}
+                    onChange={(v) => setParam(spec.key, Number(v))}
+                  />
+                ))}
+              </div>
+            </fieldset>
+          )}
+
+          <TextField
+            label="Action text"
+            multiline
+            value={rule.actionText}
+            onChange={(actionText) => onUpdate({ ...rule, actionText })}
+          />
+
+          <button type="button" className="btn" onClick={() => onDuplicate(rule)}>
+            Duplicate
+          </button>
+        </div>
+      </details>
     </div>
   )
 }

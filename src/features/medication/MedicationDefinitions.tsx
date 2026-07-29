@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { TextField } from '../../components/TextField'
+import { AddDisclosure } from '../../components/AddDisclosure'
 import type { MedicationDefinition } from '../../data/schemas'
 
 interface Props {
@@ -70,17 +71,19 @@ export function MedicationDefinitions({
           ))}
         </ul>
       )}
-      <form className="stack" onSubmit={handleSubmit}>
-        <TextField label="Medication name" value={name} onChange={setName} required />
-        <TextField
-          label="Formulation (optional)"
-          value={formulation}
-          onChange={setFormulation}
-        />
-        <button type="submit" className="btn btn-primary" disabled={saving}>
-          {saving ? 'Saving…' : 'Add medication'}
-        </button>
-      </form>
+      <AddDisclosure label="+ Add a medication">
+        <form className="stack" onSubmit={handleSubmit}>
+          <TextField label="Medication name" value={name} onChange={setName} required />
+          <TextField
+            label="Formulation (optional)"
+            value={formulation}
+            onChange={setFormulation}
+          />
+          <button type="submit" className="btn btn-primary" disabled={saving}>
+            {saving ? 'Saving…' : 'Add medication'}
+          </button>
+        </form>
+      </AddDisclosure>
     </section>
   )
 }

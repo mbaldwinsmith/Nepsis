@@ -1839,3 +1839,443 @@ Before declaring the MVP complete, provide:
 - accessibility findings;
 - any tasks intentionally deferred;
 - confirmation that no personal data leaves the device in the default configuration.
+
+---
+
+# Phase 16 — UI overhaul (calm check-in, word scales, and readable trends)
+
+This phase is additive: it changes presentation, navigation, and copy only.
+No entity gains, loses, or renames a field; `SCHEMA_VERSION`,
+`BACKUP_FORMAT_VERSION`, the Dexie `version()` blocks, the repositories, and
+the rule engine are untouched. Every field reachable in the current UI must
+remain reachable after it, and every safety and privacy constraint in
+`README.md` continues to apply — no remote fonts, no analytics, no
+diagnostic or causal wording, no gamification, UK spelling.
+
+Driving problem: the daily check-in renders roughly 35 numeric scale
+controls in a single scroll, and the trends screen asks the user to pick
+metrics before it shows anything. Both are recorded as information
+overload.
+
+Guiding rules for the whole phase:
+
+- Missing stays missing. A skipped control must not write `0`, and a
+  skipped step must not write an empty object where `undefined` belongs.
+- Numbers stay in the data. The UI shows a word; the stored value is the
+  same integer as today.
+- Nothing is hidden behind personalisation. There is no "what I track"
+  setting in this phase; every field is present for every user.
+
+## 16.1 Design tokens and type scale
+
+- [ ] Extend `src/styles/tokens.css` with the tokens the new screens need,
+      keeping the existing names and their light/dark pairs intact:
+      `--color-hair` (a lighter card border than `--color-border`),
+      `--color-accent-tint`, and radii `--radius-xl: 16px` and
+      `--radius-2xl: 18px`.
+- [ ] Add a type scale to `tokens.css` — `--text-display`, `--text-title`,
+      `--text-body`, `--text-label`, `--text-caption` — and use it in place
+      of the ad-hoc `fontSize` values currently inlined across pages.
+- [ ] Keep `--font-sans` as the system stack. Do not add a web font: the
+      privacy model forbids remote font requests.
+- [ ] Verify every new token has a `prefers-color-scheme: dark` value and
+      that dark mode is reviewed on all screens, not only the home screen.
+
+Acceptance criteria:
+
+- [ ] No new colour is introduced without a dark-mode counterpart.
+- [ ] No component hard-codes a hex value outside `tokens.css`.
+- [ ] Contrast passes WCAG 2.2 AA in both schemes, checked on body text,
+      muted hint text, and text on `--color-accent`.
+
+## 16.2 Shared controls
+
+- [ ] Rewrite `src/components/ScaleInput.tsx` as a word-labelled scale: a
+      row of equally sized hit areas over a track, the selected point shown
+      as a filled knob, and the chosen option's word rendered beside the
+      legend. Accept a new required `words: string[]` prop whose length
+      equals `max - min + 1`.
+- [ ] Keep `ScaleInput` built on native radio inputs inside a `fieldset`
+      with a `legend`, so keyboard and screen-reader behaviour and the
+      existing tests in `src/components/__tests__/` still hold. The visual
+      knob and track must be presentational only.
+- [ ] Show `not yet` (muted, italic) instead of a number when the value is
+      `undefined`, and never render a default selection.
+- [ ] Each hit area keeps a minimum 44 px touch target and remains usable
+      at 320 px width, with the endpoint labels below.
+- [ ] Restyle `src/components/SegmentedControl.tsx` as pill chips (44 px
+      minimum height, wrapping row with `gap`), keeping its radio-group
+      semantics and API unchanged.
+- [ ] Add `src/components/ChipMultiSelect.tsx` for the checkbox groups that
+      currently render as vertical lists — personal warning signs,
+      interaction types, cancellation reasons — with `aria-pressed` or
+      native checkboxes and no reliance on colour alone.
+- [ ] Add `src/components/ToggleField.tsx` (switch presentation over a
+      native checkbox) and migrate `CheckboxField` usages that read as
+      "did this happen today" — nap taken, missed dose, binge eating,
+      impulsive behaviour.
+- [ ] Add `src/components/QuickValues.tsx`: two or three optional shortcut
+      chips beside a numeric field (for example 6h / 7h / 8h for sleep
+      duration). Shortcuts set the same numeric field; they add no new data.
+
+Acceptance criteria:
+
+- [ ] Every restyled control keeps its existing props, name, and
+      accessibility semantics; only presentation changes.
+- [ ] `npm test` passes with the existing scale, nap, alcohol, and
+      cancellation-field tests unmodified except for word-label assertions.
+- [ ] A scale never reports a value the user did not choose.
+
+## 16.3 Daily check-in as a stepped flow
+
+- [ ] Introduce a step model in `src/features/check-in/steps.ts`: an
+      ordered array of twelve steps, each `{ id, section, title, subtitle?,
+      fields }`, covering exactly the fields currently rendered by
+      `sections/SleepSection.tsx`, `MoodSection.tsx`,
+      `WarningSignsSection.tsx`, `DailyRhythmSection.tsx`,
+      `AppetiteSection.tsx`, `MedicationEffectsSection.tsx`, and the
+      optional note.
+- [ ] Split the long sections so no step carries more than four questions:
+      Sleep → last night / getting to sleep and waking / daytime rest;
+      Mood → how today felt / pace and drive; Daily rhythm → alcohol /
+      other people; Appetite → eating / urges.
+- [ ] Keep the existing conditional reveals inside their step: nap
+      duration, after-effect, and likely reason appear only when
+      `napTaken` is true; alcohol context and perceived effect appear only
+      when `unitsConsumed > 0`. Clearing the parent must still clear the
+      children, exactly as today.
+- [ ] Rework `CheckInPage.tsx` to render one step at a time with a sticky
+      header: back control, `Step n of 12`, `Save & close`, and a progress
+      bar. `Continue` advances; a `Skip` control advances without writing
+      anything.
+- [ ] Persist the draft on every change through the existing
+      `useDailyCheckIn` save path so leaving mid-flow loses nothing, and
+      re-entering the same day resumes at the first step with an
+      unanswered field.
+- [ ] Add a final review step listing each section with the values
+      recorded, a per-section `Edit` link that jumps back to that step, and
+      an explicit `not recorded` for anything skipped. Saving from the
+      review step is the same repository call as today.
+- [ ] Keep the route `/check-in`; hold the step index in component state,
+      not in the URL, so a refresh does not resume mid-form with a stale
+      draft.
+- [ ] Preserve editability: opening an existing check-in shows recorded
+      values in every step, and `Update check-in` remains the wording when
+      one exists.
+
+Acceptance criteria:
+
+- [ ] Every field in `CheckInDraft` is reachable, editable, and saved.
+- [ ] Skipping a step writes no values for that step.
+- [ ] `e2e/check-in.spec.ts` is extended to walk all twelve steps, to cover
+      the nap and alcohol reveals in their new positions, and to assert
+      that a skipped scale is absent from the stored record rather than 0.
+- [ ] Completing a check-in takes no more taps than the current single
+      scroll for a user who answers everything.
+
+## 16.4 Today screen
+
+- [ ] Rework `src/app/HomePage.tsx` around one primary action: a card
+      reading `Today’s check-in · 12 short steps · about a minute`, or the
+      update wording when a check-in already exists.
+- [ ] Move the transition-day line and the last-night sleep summary into a
+      quiet header block rather than separate cards.
+- [ ] Add a `Last seven days` card: one row per metric (sleep, energy,
+      social drive) with a small gap-aware sparkline, the user's recorded
+      baseline as a dotted line, and the latest value as a word.
+- [ ] Keep upcoming commitments and the link to all commitments.
+- [ ] Keep the full safety paragraph and the safety-plan link at the foot
+      of the page, unshortened.
+
+Acceptance criteria:
+
+- [ ] The screen fits the primary action, one review prompt, and the
+      seven-day card above the fold at 390 × 844.
+- [ ] Sparklines break at missing days and never interpolate.
+- [ ] With no data at all, the page shows the check-in action and nothing
+      that implies a value of zero.
+
+## 16.5 Trends
+
+- [ ] Restructure `src/features/trends/TrendsPage.tsx` into: range chips →
+      pattern cards → a compare card → per-metric small multiples → the
+      data table.
+- [ ] Keep `MetricPicker` behaviour — all sixteen metrics from
+      `metrics.ts`, a maximum of three selected — but present it as chips
+      inside the compare card, with unselectable chips shown as dashed
+      outlines rather than disabled checkboxes.
+- [ ] Keep the multi-series comparison in `TrendChart.tsx`: each series on
+      its own normalised scale, distinguished by colour, dash pattern, and
+      a text label, with each series' baseline drawn at its own opacity and
+      event markers as vertical ticks.
+- [ ] Add small multiples below the compare card: one card per metric for
+      all sixteen, each with the latest value, a sparkline with the user's
+      baseline band, and a one-sentence factual note derived from recorded
+      data only (counts and comparisons, never a cause).
+- [ ] Keep the custom range: selecting `Custom` reveals the start and end
+      date fields from `RangeSelector.tsx`, with the existing swap when end
+      precedes start.
+- [ ] Keep `View data as a table` present in the DOM as the non-visual
+      equivalent for every chart, including the small multiples.
+- [ ] Render small multiples from `metricDefinitions` so a new metric needs
+      no new markup.
+
+Acceptance criteria:
+
+- [ ] All sixteen metrics are reachable, and any three can be compared on
+      one chart.
+- [ ] Custom start and end dates are present and functional.
+- [ ] Charts carry a table or textual equivalent, and no series is
+      identified by colour alone.
+- [ ] `e2e/trends.spec.ts` covers selecting a third metric, being blocked
+      from a fourth, and setting a custom range.
+
+## 16.6 Quiet review prompts
+
+- [ ] Restyle `src/components/AlertCard.tsx` as a low-contrast card with a
+      3 px left rule in `--color-review` or `--color-urgent`, no severity
+      pill, and the heading `Worth a look, when you have a moment`.
+- [ ] Keep every transparency element: the rule label, the date range, the
+      summary, the collapsible evidence list with per-item date and source,
+      the user's configured action text, the safety-plan link, and dismiss
+      with undo.
+- [ ] Keep the `act` treatment visually distinct from `review` without
+      alarmist colour, and keep the non-colour indicator (wording) so
+      severity is never conveyed by colour alone.
+- [ ] Restyle the urgent observer block in `ObserverEntryCard.tsx` to
+      match, keeping the safety-plan actions and the fallback when no
+      urgent actions are configured.
+
+Acceptance criteria:
+
+- [ ] A prompt is ignorable without dismissing it and never blocks a task.
+- [ ] `e2e/rules.spec.ts` still finds the rule label, date range, and every
+      evidence row.
+
+## 16.7 Observer check-in
+
+- [ ] Restyle `src/features/observers/ObserverForm.tsx` with the new chip
+      and word-scale controls, keeping every field: observer label, date
+      observed, perceived mood, speech, activity, irritability (0–3),
+      restlessness (0–3), impulsive or uncharacteristic behaviour, concern,
+      and the optional factual note.
+- [ ] Keep `Describe what you observed, not what you think it means` as the
+      form's opening line.
+- [ ] Restyle `ObserverEntryCard.tsx`: observer label and date in the
+      header, observations as read-only chips instead of a `dl` grid, note
+      as body text, concern as plain words rather than raw enum values
+      (`keepWatching` → `keep watching`).
+- [ ] Keep observer entries visually separate from self-report — the raised
+      surface and accent left rule — and never merge them into a score.
+
+Acceptance criteria:
+
+- [ ] Field-for-field parity with the current form, verified against
+      `ObserverForm.test.tsx`.
+- [ ] No raw camelCase enum value is rendered to the user anywhere on the
+      screen.
+
+## 16.8 Plans and cancellations
+
+- [ ] Restyle `CommitmentCard.tsx`: title, date, type and importance in the
+      header, the current outcome as a status chip, outcomes as a chip row,
+      and the detail block revealed only for postponed, cancelled, and did
+      not attend.
+- [ ] Keep the reason multi-select, notice given, after-effect, and the
+      optional factual note, and keep the healthy-boundary explanation and
+      the note that a healthy boundary is not shown as an adverse pattern.
+- [ ] Move `NewCommitmentForm.tsx` behind an `+ Add a plan` control so the
+      list is what the page opens on, keeping every field on the form.
+- [ ] Keep `ShowMoreList` paging.
+
+Acceptance criteria:
+
+- [ ] Attended and attended briefly still ask nothing further.
+- [ ] `CommitmentCard.test.tsx` and
+      `e2e/commitments-and-observer.spec.ts` pass with selector updates
+      only.
+
+## 16.9 Medication and transition timeline
+
+- [ ] Restyle `MedicationDefinitions.tsx` as a list with per-item archive
+      and unarchive, an `+ Add a medication` reveal for the name and
+      formulation fields, and the archived state shown in words as well as
+      opacity.
+- [ ] Restyle `DoseLog.tsx`, keeping the medication select, the status
+      control (taken, delayed, missed, not scheduled), the optional dose
+      and unit fields, and the recent-doses list.
+- [ ] Rebuild `TransitionTimeline.tsx` as a vertical timeline — date rail,
+      node, connector, title and detail — with the add-event form behind an
+      `+ Add an event` control and all ten event types still available.
+- [ ] Keep `Only change medication according to the plan agreed with your
+      prescriber` visible on the page without scrolling past the first
+      card.
+
+Acceptance criteria:
+
+- [ ] Add, archive, unarchive, dose logging with every status, and event
+      creation all still work.
+- [ ] `DoseLog.test.tsx` and `e2e/medication-and-health.spec.ts` pass.
+
+## 16.10 Health measurements
+
+- [ ] Restyle `HealthMeasurementCard.tsx`: plain-language label instead of
+      the raw type, value and unit as the emphasis, measured date and the
+      entered reference range as one muted line.
+- [ ] Keep the exact wording `Outside the supplied reference range —
+      discuss with your clinician.` for out-of-range values, and keep it
+      non-colour-dependent.
+- [ ] Move `HealthMeasurementForm.tsx` behind an `+ Add a measurement`
+      control, keeping all sixteen types, the default units, the
+      plain-language hints, both reference bounds, and the notes field.
+- [ ] Keep the explanation that Nepsis only compares a value with the range
+      the user typed in and never interprets a result.
+
+Acceptance criteria:
+
+- [ ] No measurement type is dropped, and every default unit is preserved.
+- [ ] The out-of-range wording is unchanged, and the
+      reference-range display tests pass.
+
+## 16.11 More, settings, rules, and safety plan
+
+- [ ] Rework `MorePage.tsx` as a single grouped list with one line of
+      description per destination, replacing six separate cards.
+- [ ] Rework `SettingsPage.tsx` as a grouped list: review rules, export and
+      backup, install, privacy — then the privacy-curtain toggle with its
+      full "this is not a password or encryption" explanation, then the
+      baseline editor behind an `Edit my baseline` control, then developer
+      seed and delete-all.
+- [ ] Keep the delete-all card visually distinct and keep its confirmation
+      step and wording.
+- [ ] Restyle `RuleCard.tsx`: label, source, and the enable toggle in the
+      header; the plain-language preview always visible; label,
+      description, severity, lookback, thresholds, action text, and
+      duplicate inside a `details` disclosure.
+- [ ] Keep the two explanatory paragraphs on `RulesPage.tsx` and the fact
+      that rules ship disabled.
+- [ ] Restyle `SafetyPlanPage.tsx`: contacts as rows with edit and remove,
+      `review` and `act` as separate blocks with `act` on the urgent
+      surface, agreed instructions, and last-reviewed date. Keep the note
+      that Nepsis cannot generate emergency instructions or contacts.
+
+Acceptance criteria:
+
+- [ ] Every route reachable today is still reachable in at most the same
+      number of taps.
+- [ ] `DeleteAllData.test.tsx`, `e2e/onboarding-and-safety-plan.spec.ts`,
+      and `e2e/data-management.spec.ts` pass.
+
+## 16.12 Responsive desktop layout
+
+- [ ] Add a breakpoint at 900 px in `global.css`: `.page` widens, and the
+      fixed bottom navigation becomes a persistent left rail with the same
+      four destinations plus direct links to plans, medication,
+      measurements, and settings.
+- [ ] Lay the trends small multiples out in a responsive grid — one column
+      on mobile, two at 900 px, three at 1200 px.
+- [ ] Two-column the home screen above 900 px: primary action and review
+      prompts on the left, seven-day card and upcoming on the right.
+- [ ] Keep the check-in flow single-column and centred at every width; a
+      wide screen must not reflow it into two columns.
+
+Acceptance criteria:
+
+- [ ] The mobile layout is unchanged below 900 px.
+- [ ] Every route is usable at 320 px, 390 px, 900 px, and 1400 px, and at
+      200% zoom.
+- [ ] `mobile-chromium` and `chromium` Playwright projects both pass.
+
+## 16.13 Copy pass
+
+- [ ] Rewrite field labels and section titles in the warmer register the
+      README prescribes — `How was it?` rather than `Sleep quality` where
+      the legend is unambiguous in context — while keeping UK spelling and
+      every prohibited word out.
+- [ ] Convert every enum rendered to the user into words
+      (`energisedOrOverstimulated` → `energised or overstimulated`).
+- [ ] Leave all safety, privacy, prescriber, reference-range, and crisis
+      wording verbatim.
+- [ ] Re-run the prohibited-wording check in `src/privacy/` over the new
+      copy and extend its e2e coverage to the new screens.
+
+Acceptance criteria:
+
+- [ ] `src/privacy/prohibitedWording.ts` finds no match anywhere in the UI.
+- [ ] No screen shows a raw enum, a raw metric key, or a bare `n/4`.
+- [ ] The copy review in §14.2 is repeated against the new strings.
+
+## 16.14 Accessibility re-verification
+
+- [ ] Re-run the §12.3 checklist across every changed screen: labels,
+      keyboard operation of the new scale and chips, focus order through
+      the stepped flow, visible focus, 44 px targets, non-colour meaning,
+      chart text equivalents, announced save and error states, reduced
+      motion, 200% zoom, 320 px width, screen-reader walkthrough.
+- [ ] Announce step changes in the check-in flow with a polite live region
+      so a screen-reader user knows which step they are on.
+- [ ] Ensure the progress bar exposes `role="progressbar"` with accessible
+      value text, or is marked decorative alongside the `Step n of 12`
+      text.
+- [ ] Extend `e2e/accessibility.spec.ts` to visit every step of the
+      check-in flow, the review step, and the trends compare card.
+
+Acceptance criteria:
+
+- [ ] Zero axe violations on every route and every check-in step, on both
+      desktop and mobile projects.
+- [ ] The whole check-in can be completed with a keyboard alone.
+
+## 16.15 Tests and documentation
+
+- [ ] Add `src/features/check-in/__tests__/steps.test.ts` asserting that
+      the union of all step fields equals the `CheckInDraft` shape, so a
+      future field cannot be added to the draft without appearing in a
+      step.
+- [ ] Add a component test for the new `ScaleInput` covering the
+      `undefined` state, keyboard selection, and word rendering.
+- [ ] Add a test that a check-in saved after skipping a step stores no key
+      for that step's fields.
+- [ ] Update `README.md`: the daily check-in section describes twelve
+      steps, the accessibility checklist notes re-verification, and the
+      design-principles section keeps the no-remote-fonts statement.
+- [ ] Add a `CHANGELOG.md` entry under `Changed` describing the overhaul as
+      presentation-only, and state explicitly that no schema or backup
+      version changed.
+- [ ] Record in this file any place the implementation deviated from the
+      plan, per the operating rules.
+
+Acceptance criteria:
+
+- [ ] `npm run format`, `npm run lint`, `npm test`, `npm run test:e2e`,
+      `npm run test:e2e:offline`, and `npm run build` all pass.
+- [ ] No migration is added, `SCHEMA_VERSION` and
+      `BACKUP_FORMAT_VERSION` are unchanged, and a backup taken before the
+      overhaul restores cleanly after it.
+
+## 16.16 Non-goals for this phase
+
+Do not, under cover of the overhaul:
+
+- add a "what I track" setting or otherwise hide fields;
+- collapse separate signals into a single mood score;
+- add streaks, badges, points, or completion percentages;
+- add a remote font, icon font, or chart library;
+- change any rule threshold, default, or evaluation window;
+- reword any safety, prescriber, reference-range, or crisis text;
+- store a step index, draft, or UI preference anywhere that
+  backup and restore would carry it as personal data.
+
+Acceptance criteria:
+
+- [ ] A reviewer can diff this phase and find no change under
+      `src/data/`, `src/rules/`, or `src/data/backup/` beyond type-only
+      imports.
+
+# Milestone D — Calm interface
+
+- [ ] Phase 16 complete.
+- [ ] Daily check-in completable in twelve steps with no field lost.
+- [ ] All sixteen trend metrics reachable, any three comparable.
+- [ ] Light and dark reviewed on every route, mobile and desktop.
+- [ ] Accessibility checklist re-verified with zero axe violations.

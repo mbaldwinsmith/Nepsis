@@ -45,8 +45,8 @@ export function MorePage() {
             className="card"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            <h2 style={{ fontSize: '1.05rem' }}>{link.label}</h2>
-            <p className="hint" style={{ margin: 0, color: 'var(--color-text-muted)' }}>
+            <h2 style={{ fontSize: 'var(--text-title)' }}>{link.label}</h2>
+            <p className="hint" style={{ margin: 0 }}>
               {link.description}
             </p>
           </Link>

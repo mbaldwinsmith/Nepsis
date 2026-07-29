@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { TextField } from '../../components/TextField'
+import { AddDisclosure } from '../../components/AddDisclosure'
 import type { HealthMeasurement, HealthMeasurementType } from '../../data/schemas'
 import { nowIsoDateTime } from '../../utils/date'
 
@@ -88,42 +89,49 @@ export function HealthMeasurementForm({ onCreate }: Props) {
   }
 
   return (
-    <form className="card stack" onSubmit={handleSubmit}>
-      <h2>Add a measurement</h2>
-      <div className="field">
-        <label htmlFor="measurement-type">Type</label>
-        <select
-          id="measurement-type"
-          value={type}
-          onChange={(e) => handleTypeChange(e.target.value as HealthMeasurementType)}
-        >
-          {typeOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-        {plainLanguageHints[type] && <p className="hint">{plainLanguageHints[type]}</p>}
-      </div>
-      <TextField label="Value" type="number" value={value} onChange={setValue} required />
-      <TextField label="Unit" value={unit} onChange={setUnit} required />
-      <TextField
-        label="Reference minimum (optional)"
-        type="number"
-        value={referenceMin}
-        onChange={setReferenceMin}
-        hint="The normal band your laboratory reports alongside a result, if supplied. Nepsis only shows whether your value falls inside or outside it — it does not interpret what that means."
-      />
-      <TextField
-        label="Reference maximum (optional)"
-        type="number"
-        value={referenceMax}
-        onChange={setReferenceMax}
-      />
-      <TextField label="Notes (optional)" multiline value={notes} onChange={setNotes} />
-      <button type="submit" className="btn btn-primary" disabled={saving}>
-        {saving ? 'Saving…' : 'Save measurement'}
-      </button>
-    </form>
+    <AddDisclosure label="+ Add a measurement" className="card">
+      <form className="stack" onSubmit={handleSubmit}>
+        <div className="field">
+          <label htmlFor="measurement-type">Type</label>
+          <select
+            id="measurement-type"
+            value={type}
+            onChange={(e) => handleTypeChange(e.target.value as HealthMeasurementType)}
+          >
+            {typeOptions.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          {plainLanguageHints[type] && <p className="hint">{plainLanguageHints[type]}</p>}
+        </div>
+        <TextField
+          label="Value"
+          type="number"
+          value={value}
+          onChange={setValue}
+          required
+        />
+        <TextField label="Unit" value={unit} onChange={setUnit} required />
+        <TextField
+          label="Reference minimum (optional)"
+          type="number"
+          value={referenceMin}
+          onChange={setReferenceMin}
+          hint="The normal band your laboratory reports alongside a result, if supplied. Nepsis only shows whether your value falls inside or outside it — it does not interpret what that means."
+        />
+        <TextField
+          label="Reference maximum (optional)"
+          type="number"
+          value={referenceMax}
+          onChange={setReferenceMax}
+        />
+        <TextField label="Notes (optional)" multiline value={notes} onChange={setNotes} />
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving…' : 'Save measurement'}
+        </button>
+      </form>
+    </AddDisclosure>
   )
 }

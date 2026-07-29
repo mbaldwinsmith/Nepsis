@@ -2,6 +2,12 @@ import { ScaleInput } from '../../../components/ScaleInput'
 import { SegmentedControl } from '../../../components/SegmentedControl'
 import { CheckboxField } from '../../../components/CheckboxField'
 import { TextField } from '../../../components/TextField'
+import {
+  VERY_POOR_TO_VERY_GOOD,
+  NOT_AT_ALL_TO_MARKEDLY,
+  NONE_TO_SEVERE,
+  NO_NEED_TO_STRONG_NEED,
+} from '../../../utils/scaleWords'
 import type { Sleep } from '../../../data/schemas'
 
 interface Props {
@@ -33,6 +39,7 @@ export function SleepSection({ value, onChange }: Props) {
         onChange={(v) => set('sleepQuality', v)}
         minLabel="Very poor"
         maxLabel="Very good"
+        words={VERY_POOR_TO_VERY_GOOD}
       />
       <ScaleInput
         legend="Reduced need for sleep"
@@ -43,6 +50,7 @@ export function SleepSection({ value, onChange }: Props) {
         onChange={(v) => set('reducedNeedForSleep', v)}
         minLabel="Not at all"
         maxLabel="Markedly"
+        words={NOT_AT_ALL_TO_MARKEDLY}
         hint="Feeling rested on less sleep than usual — different from sleeping badly."
       />
       <ScaleInput
@@ -54,6 +62,7 @@ export function SleepSection({ value, onChange }: Props) {
         onChange={(v) => set('difficultyFallingAsleep', v)}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Waking unusually early"
@@ -64,6 +73,7 @@ export function SleepSection({ value, onChange }: Props) {
         onChange={(v) => set('wakingUnusuallyEarly', v)}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Need to nap at lunchtime"
@@ -74,6 +84,7 @@ export function SleepSection({ value, onChange }: Props) {
         onChange={(v) => set('lunchtimeNapNeed', v)}
         minLabel="No need"
         maxLabel="Strong need"
+        words={NO_NEED_TO_STRONG_NEED}
       />
       <CheckboxField
         label="Nap taken"

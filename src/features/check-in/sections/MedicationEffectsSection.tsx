@@ -1,6 +1,7 @@
 import { ScaleInput } from '../../../components/ScaleInput'
 import { CheckboxField } from '../../../components/CheckboxField'
 import { TextField } from '../../../components/TextField'
+import { NONE_TO_SEVERE } from '../../../utils/scaleWords'
 import type { MedicationEffects } from '../../../data/schemas'
 
 interface Props {
@@ -28,6 +29,7 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
         onChange={(v) => onChange({ ...value, sedation: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Dizziness"
@@ -38,6 +40,7 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
         onChange={(v) => onChange({ ...value, dizziness: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Nausea"
@@ -48,6 +51,7 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
         onChange={(v) => onChange({ ...value, nausea: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Tremor or stiffness"
@@ -58,6 +62,7 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
         onChange={(v) => onChange({ ...value, tremorOrStiffness: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
       />
       <ScaleInput
         legend="Inner restlessness or need to move"
@@ -68,6 +73,7 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
         onChange={(v) => onChange({ ...value, innerRestlessness: v })}
         minLabel="None"
         maxLabel="Severe"
+        words={NONE_TO_SEVERE}
         hint="This can be worth discussing with your prescriber — it is different from anxiety."
       />
       <TextField
