@@ -45,5 +45,16 @@ export function useCommitments() {
     await refresh()
   }
 
-  return { commitments, loading, create, update, refresh }
+  async function remove(id: string) {
+    await socialCommitmentRepository.remove(id)
+    await refresh()
+  }
+
+  /** Re-inserts a commitment exactly as it was, id and timestamps included — for undoing a remove. */
+  async function restore(commitment: SocialCommitment) {
+    await socialCommitmentRepository.create(commitment)
+    await refresh()
+  }
+
+  return { commitments, loading, create, update, remove, restore, refresh }
 }

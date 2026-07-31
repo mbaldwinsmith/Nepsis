@@ -26,6 +26,7 @@ function Harness({ initial }: { initial: SocialCommitment }) {
       commitment={commitment}
       onUpdate={setCommitment}
       onOutcomeChange={setCommitment}
+      onRemove={() => {}}
     />
   )
 }

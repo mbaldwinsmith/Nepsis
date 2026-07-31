@@ -16,6 +16,7 @@ interface Props {
   commitment: SocialCommitment
   onUpdate: (commitment: SocialCommitment) => void
   onOutcomeChange: (next: SocialCommitment, previous: SocialCommitment) => void
+  onRemove: (commitment: SocialCommitment) => void
 }
 
 const outcomeOptions: { value: CommitmentOutcome; label: string }[] = [
@@ -40,7 +41,12 @@ const reasonOptions: { value: CommitmentReason; label: string }[] = [
 
 const detailOutcomes: CommitmentOutcome[] = ['postponed', 'cancelled', 'didNotAttend']
 
-export function CommitmentCard({ commitment, onUpdate, onOutcomeChange }: Props) {
+export function CommitmentCard({
+  commitment,
+  onUpdate,
+  onOutcomeChange,
+  onRemove,
+}: Props) {
   const needsDetail = detailOutcomes.includes(commitment.outcome)
 
   function setOutcome(outcome: CommitmentOutcome) {
@@ -60,13 +66,30 @@ export function CommitmentCard({ commitment, onUpdate, onOutcomeChange }: Props)
 
   return (
     <div className="card stack">
-      <div>
-        <strong>{commitment.title || COMMITMENT_TYPE_LABELS[commitment.type]}</strong>
-        <p className="hint" style={{ margin: 0 }}>
-          {formatIsoDateForDisplay(commitment.plannedDate)} ·{' '}
-          {COMMITMENT_TYPE_LABELS[commitment.type]} ·{' '}
-          {COMMITMENT_IMPORTANCE_LABELS[commitment.importance]}
-        </p>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 'var(--space-2)',
+        }}
+      >
+        <div>
+          <strong>{commitment.title || COMMITMENT_TYPE_LABELS[commitment.type]}</strong>
+          <p className="hint" style={{ margin: 0 }}>
+            {formatIsoDateForDisplay(commitment.plannedDate)} ·{' '}
+            {COMMITMENT_TYPE_LABELS[commitment.type]} ·{' '}
+            {COMMITMENT_IMPORTANCE_LABELS[commitment.importance]}
+          </p>
+        </div>
+        <button
+          type="button"
+          className="btn"
+          style={{ flexShrink: 0 }}
+          onClick={() => onRemove(commitment)}
+        >
+          Remove
+        </button>
       </div>
 
       <SegmentedControl

@@ -155,6 +155,8 @@ Possible outcomes include:
 
 The app distinguishes between nothing being planned, a healthy boundary, a commitment missed because of distress, and an essential commitment being missed.
 
+Each commitment can be removed individually (e.g. an accidental duplicate entry), with an "Undo" option on the confirmation toast for a few seconds afterwards.
+
 ### Observer check-in
 
 Trusted supporters can record a short factual observation without their entry being merged into the user’s self-report.
