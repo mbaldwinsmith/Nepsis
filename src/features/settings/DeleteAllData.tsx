@@ -7,9 +7,13 @@ export function DeleteAllData() {
   const { showToast } = useToast()
 
   async function handleDelete() {
-    await deleteAllLocalData()
-    setConfirming(false)
-    showToast('All local data deleted', 'success')
+    try {
+      await deleteAllLocalData()
+      setConfirming(false)
+      showToast('All local data deleted', 'success')
+    } catch {
+      showToast('Could not delete your data. Please try again.', 'error')
+    }
   }
 
   return (

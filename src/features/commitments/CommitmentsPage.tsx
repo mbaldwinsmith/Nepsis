@@ -1,15 +1,49 @@
+import { useEffect, useRef } from 'react'
 import { useCommitments } from './useCommitments'
 import { CommitmentCard } from './CommitmentCard'
 import { NewCommitmentForm } from './NewCommitmentForm'
 import { ShowMoreList } from '../../components/ShowMoreList'
+import { useToast } from '../../components/toastContext'
+import type { SocialCommitment } from '../../data/schemas'
+
+// CommitmentCard auto-saves each field the moment it changes (outcome,
+// reasons, notice, after-effect, note), so a burst of edits to one entry
+// would otherwise fire a toast per click/keystroke. Collapsing them into one
+// toast after a short pause reads as "your changes are saved", not noise.
+const UPDATE_TOAST_DELAY_MS = 700
 
 export function CommitmentsPage() {
   const { commitments, loading, create, update } = useCommitments()
+  const { showToast } = useToast()
+  const updateToastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  useEffect(() => () => clearTimeout(updateToastTimer.current), [])
+
+  async function handleCreate(input: Parameters<typeof create>[0]) {
+    try {
+      await create(input)
+      showToast('Commitment added', 'success')
+    } catch {
+      showToast('Could not add this commitment. Please try again.', 'error')
+    }
+  }
+
+  async function handleUpdate(commitment: SocialCommitment) {
+    try {
+      await update(commitment)
+      clearTimeout(updateToastTimer.current)
+      updateToastTimer.current = setTimeout(() => {
+        showToast('Commitment updated', 'success')
+      }, UPDATE_TOAST_DELAY_MS)
+    } catch {
+      showToast('Could not save this change. Please try again.', 'error')
+    }
+  }
 
   return (
     <div className="page stack">
       <h1>Plans & commitments</h1>
-      <NewCommitmentForm onCreate={create} />
+      <NewCommitmentForm onCreate={handleCreate} />
       {loading ? (
         <p>Loading…</p>
       ) : commitments.length === 0 ? (
@@ -19,7 +53,7 @@ export function CommitmentsPage() {
           items={commitments}
           getKey={(commitment) => commitment.id}
           renderItem={(commitment) => (
-            <CommitmentCard commitment={commitment} onUpdate={update} />
+            <CommitmentCard commitment={commitment} onUpdate={handleUpdate} />
           )}
         />
       )}

@@ -17,6 +17,7 @@ test('records a commitment and marks it cancelled for distress-related reasons',
     .click()
   await page.getByRole('button', { name: 'Add commitment' }).click()
   await expect(page.getByText('Lunch with a friend')).toBeVisible()
+  await expect(page.getByText('Commitment added')).toBeVisible()
 
   const card = page.locator('div.card').filter({ hasText: 'Lunch with a friend' })
   await card
@@ -25,6 +26,9 @@ test('records a commitment and marks it cancelled for distress-related reasons',
     .click()
   await expect(card.getByText('Reason (select any that apply)')).toBeVisible()
   await card.getByText('Distress', { exact: true }).click()
+  // The outcome change and the reason click both auto-save; the toast is
+  // debounced so this one confirmation covers both, rather than firing twice.
+  await expect(page.getByText('Commitment updated')).toBeVisible()
 
   await page.reload()
   const reloadedCard = page.locator('div.card').filter({ hasText: 'Lunch with a friend' })
@@ -51,5 +55,6 @@ test('submits an observer entry and it appears in the app without console errors
 
   await expect(page.getByText('Observer: Friend A')).toBeVisible()
   await expect(page.getByText('Concern: Keep watching')).toBeVisible()
+  await expect(page.getByText('Observation saved')).toBeVisible()
   expect(errors).toEqual([])
 })
