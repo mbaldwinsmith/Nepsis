@@ -1178,11 +1178,16 @@ Acceptance criteria:
 > Zod schema before anything is written to IndexedDB, then committed in a
 > single Dexie transaction — so a validation failure never touches the
 > database, and a transaction-level failure rolls back automatically.
-> Only one schema version has ever shipped, so "restore from an older
-> version" is vacuously satisfied today; a real cross-version test should
-> be added the day `SCHEMA_VERSION` first bumps (a future restore
-> unsupported-version case is already tested and rejected with a clear
-> message).
+>
+> Update: `SCHEMA_VERSION` first bumped (1 → 2) when
+> `medicationEffects.tremorOrStiffness` was split into separate `tremor`
+> and `stiffness` fields (see `src/data/migrations.ts`). A real
+> cross-version restore test now exists —
+> `src/data/backup/__tests__/restore.test.ts`'s "migrates a version-1
+> dailyCheckIn ... before validating" — covering a pre-split backup file,
+> alongside the equivalent on-device Dexie upgrade test in
+> `src/data/__tests__/migrations.test.ts`. The restore-unsupported-newer-
+> version case remains covered as before.
 
 ## 10.4 Delete all data
 

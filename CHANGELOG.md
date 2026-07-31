@@ -23,6 +23,15 @@ version numbers still increase monotonically and are shown in
   (e.g. marking it cancelled) reverts in one tap.
 - Individual commitments can now be removed with a "Remove" button on
   each card, with its own "Commitment deleted" toast and Undo action.
+- The daily check-in's combined "Tremor or stiffness" scale is now two
+  separate scales, "Tremor" and "Stiffness" — they are distinct
+  extrapyramidal side effects worth tracking independently.
+  **`SCHEMA_VERSION` bumped 1 → 2** for this: a Dexie `.upgrade()` (no
+  table/index change, data-only) carries any existing combined value into
+  both new fields on every check-in already on this device, and the same
+  transform is applied to a pre-split backup file during restore, so an
+  older backup restores cleanly rather than being rejected. See
+  `src/data/migrations.ts` for the full note.
 
 ### Fixed
 
