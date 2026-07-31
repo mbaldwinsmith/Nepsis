@@ -31,7 +31,14 @@ export function MedicationPage() {
   async function handleArchive(definition: MedicationDefinition) {
     try {
       await archiveDefinition(definition)
-      showToast(`${definition.name} archived`, 'success')
+      showToast(`${definition.name} archived`, 'success', {
+        label: 'Undo',
+        onClick: () => {
+          unarchiveDefinition(definition).catch(() => {
+            showToast('Could not undo. Please try again.', 'error')
+          })
+        },
+      })
     } catch {
       showToast('Could not archive this medication. Please try again.', 'error')
     }
@@ -40,7 +47,14 @@ export function MedicationPage() {
   async function handleUnarchive(definition: MedicationDefinition) {
     try {
       await unarchiveDefinition(definition)
-      showToast(`${definition.name} unarchived`, 'success')
+      showToast(`${definition.name} unarchived`, 'success', {
+        label: 'Undo',
+        onClick: () => {
+          archiveDefinition(definition).catch(() => {
+            showToast('Could not undo. Please try again.', 'error')
+          })
+        },
+      })
     } catch {
       showToast('Could not unarchive this medication. Please try again.', 'error')
     }

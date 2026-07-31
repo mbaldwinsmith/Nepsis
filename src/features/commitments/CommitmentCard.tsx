@@ -15,6 +15,7 @@ import {
 interface Props {
   commitment: SocialCommitment
   onUpdate: (commitment: SocialCommitment) => void
+  onOutcomeChange: (next: SocialCommitment, previous: SocialCommitment) => void
 }
 
 const outcomeOptions: { value: CommitmentOutcome; label: string }[] = [
@@ -39,17 +40,22 @@ const reasonOptions: { value: CommitmentReason; label: string }[] = [
 
 const detailOutcomes: CommitmentOutcome[] = ['postponed', 'cancelled', 'didNotAttend']
 
-export function CommitmentCard({ commitment, onUpdate }: Props) {
+export function CommitmentCard({ commitment, onUpdate, onOutcomeChange }: Props) {
   const needsDetail = detailOutcomes.includes(commitment.outcome)
 
   function setOutcome(outcome: CommitmentOutcome) {
-    onUpdate({
-      ...commitment,
-      outcome,
-      reasons: detailOutcomes.includes(outcome) ? commitment.reasons : undefined,
-      notice: detailOutcomes.includes(outcome) ? commitment.notice : undefined,
-      afterEffect: detailOutcomes.includes(outcome) ? commitment.afterEffect : undefined,
-    })
+    onOutcomeChange(
+      {
+        ...commitment,
+        outcome,
+        reasons: detailOutcomes.includes(outcome) ? commitment.reasons : undefined,
+        notice: detailOutcomes.includes(outcome) ? commitment.notice : undefined,
+        afterEffect: detailOutcomes.includes(outcome)
+          ? commitment.afterEffect
+          : undefined,
+      },
+      commitment,
+    )
   }
 
   return (

@@ -37,6 +37,24 @@ test('adds a medication, logs a dose, and records a dose-change transition event
   await expect(page.getByText('Event added')).toBeVisible()
 })
 
+test('archiving a medication can be undone', async ({ page }) => {
+  await page.goto('/#/medication')
+
+  await page.getByText('+ Add a medication').click()
+  await page.getByLabel('Medication name').fill('Sample medication B')
+  await page.getByRole('button', { name: 'Add medication' }).click()
+  const item = page.getByRole('listitem').filter({ hasText: 'Sample medication B' })
+  await expect(item).toBeVisible()
+
+  await item.getByRole('button', { name: 'Archive' }).click()
+  await expect(item).toContainText('archived')
+  await expect(page.getByText('Sample medication B archived')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Undo' }).click()
+  await expect(item).not.toContainText('archived')
+  await expect(item.getByRole('button', { name: 'Archive' })).toBeVisible()
+})
+
 test('records a weight measurement and a liver-function result', async ({ page }) => {
   await page.goto('/#/health')
 
