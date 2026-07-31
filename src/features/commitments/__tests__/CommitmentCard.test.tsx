@@ -21,7 +21,13 @@ function baseCommitment(overrides: Partial<SocialCommitment> = {}): SocialCommit
 
 function Harness({ initial }: { initial: SocialCommitment }) {
   const [commitment, setCommitment] = useState(initial)
-  return <CommitmentCard commitment={commitment} onUpdate={setCommitment} />
+  return (
+    <CommitmentCard
+      commitment={commitment}
+      onUpdate={setCommitment}
+      onOutcomeChange={setCommitment}
+    />
+  )
 }
 
 describe('CommitmentCard', () => {

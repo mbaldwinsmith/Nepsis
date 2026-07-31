@@ -5,6 +5,7 @@ import { NewCommitmentForm } from './NewCommitmentForm'
 import { ShowMoreList } from '../../components/ShowMoreList'
 import { useToast } from '../../components/toastContext'
 import type { SocialCommitment } from '../../data/schemas'
+import { COMMITMENT_OUTCOME_LABELS } from '../../utils/enumLabels'
 
 // CommitmentCard auto-saves each field the moment it changes (outcome,
 // reasons, notice, after-effect, note), so a burst of edits to one entry
@@ -40,6 +41,25 @@ export function CommitmentsPage() {
     }
   }
 
+  async function handleOutcomeChange(next: SocialCommitment, previous: SocialCommitment) {
+    try {
+      await update(next)
+      // A deliberate, undoable moment in its own right, so it isn't folded
+      // into the debounced "Commitment updated" toast used for the rest of
+      // the card's auto-saving fields.
+      showToast(`Marked as ${COMMITMENT_OUTCOME_LABELS[next.outcome]}`, 'success', {
+        label: 'Undo',
+        onClick: () => {
+          update(previous).catch(() => {
+            showToast('Could not undo. Please try again.', 'error')
+          })
+        },
+      })
+    } catch {
+      showToast('Could not save this change. Please try again.', 'error')
+    }
+  }
+
   return (
     <div className="page stack">
       <h1>Plans & commitments</h1>
@@ -53,7 +73,11 @@ export function CommitmentsPage() {
           items={commitments}
           getKey={(commitment) => commitment.id}
           renderItem={(commitment) => (
-            <CommitmentCard commitment={commitment} onUpdate={handleUpdate} />
+            <CommitmentCard
+              commitment={commitment}
+              onUpdate={handleUpdate}
+              onOutcomeChange={handleOutcomeChange}
+            />
           )}
         />
       )}

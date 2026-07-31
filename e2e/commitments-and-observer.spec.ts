@@ -24,6 +24,7 @@ test('records a commitment and marks it cancelled for distress-related reasons',
     .getByRole('radiogroup', { name: 'Outcome' })
     .getByText('Cancelled', { exact: true })
     .click()
+  await expect(page.getByText('Marked as Cancelled')).toBeVisible()
   await expect(card.getByText('Reason (select any that apply)')).toBeVisible()
   await card.getByText('Distress', { exact: true }).click()
   // The outcome change and the reason click both auto-save; the toast is
@@ -33,6 +34,30 @@ test('records a commitment and marks it cancelled for distress-related reasons',
   await page.reload()
   const reloadedCard = page.locator('div.card').filter({ hasText: 'Lunch with a friend' })
   await expect(reloadedCard.getByRole('checkbox', { name: 'Distress' })).toBeChecked()
+})
+
+test('undoing a commitment outcome change reverts it', async ({ page }) => {
+  await page.goto('/#/commitments')
+
+  await page.getByText('+ Add a plan').click()
+  await page.getByLabel('Title (optional)').fill('Coffee with a friend')
+  await page.getByRole('button', { name: 'Add commitment' }).click()
+  await expect(page.getByText('Coffee with a friend')).toBeVisible()
+
+  const card = page.locator('div.card').filter({ hasText: 'Coffee with a friend' })
+  await card
+    .getByRole('radiogroup', { name: 'Outcome' })
+    .getByText('Cancelled', { exact: true })
+    .click()
+  await expect(card.getByText('Reason (select any that apply)')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Undo' }).click()
+  await expect(card.getByText('Reason (select any that apply)')).not.toBeVisible()
+  await expect(
+    card
+      .getByRole('radiogroup', { name: 'Outcome' })
+      .getByRole('radio', { name: 'Cancelled' }),
+  ).not.toBeChecked()
 })
 
 test('submits an observer entry and it appears in the app without console errors', async ({

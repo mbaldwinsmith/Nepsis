@@ -17,6 +17,10 @@ version numbers still increase monotonically and are shown in
   logged dose, a transition event, and a health measurement. Commitment
   edits auto-save as you go, so their confirmation is debounced to one
   toast per burst of changes rather than one per click or keystroke.
+- Two of those save toasts now offer an "Undo" action, matching the
+  pattern already used for dismissing a review card on Home: archiving
+  or unarchiving a medication, and changing a commitment's outcome
+  (e.g. marking it cancelled) reverts in one tap.
 
 ### Fixed
 
