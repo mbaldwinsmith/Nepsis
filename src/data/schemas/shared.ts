@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 /** Current schema version. Bump alongside a Dexie migration when a persisted shape changes. */
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 export const id = () => z.string().min(1)
 

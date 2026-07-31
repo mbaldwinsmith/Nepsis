@@ -150,6 +150,39 @@ test('records a lunchtime nap and alcohol units on their own steps, including th
   await expect(page.getByLabel('Units consumed')).toHaveValue('2')
 })
 
+test('records tremor and stiffness as separate scales on the medication step', async ({
+  page,
+}) => {
+  await page.goto('/#/check-in')
+
+  // Steps 1-10: skip everything before the medication step (step 11 of 12).
+  await advanceSteps(page, 10)
+  await expect(page.getByText('Step 11 of 12')).toBeVisible()
+
+  await page
+    .getByRole('radiogroup', { name: 'Tremor' })
+    .getByText('mild', { exact: true })
+    .click()
+  await page
+    .getByRole('radiogroup', { name: 'Stiffness' })
+    .getByText('severe', { exact: true })
+    .click()
+
+  await advanceSteps(page, 2)
+  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible()
+
+  const medicationCard = page
+    .locator('.card')
+    .filter({ hasText: 'Medication and side effects' })
+  await expect(medicationCard.getByText('Tremor')).toBeVisible()
+  await expect(medicationCard.getByText('mild')).toBeVisible()
+  await expect(medicationCard.getByText('Stiffness')).toBeVisible()
+  await expect(medicationCard.getByText('severe')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Save check-in' }).click()
+  await expect(page.getByText('Check-in saved')).toBeVisible()
+})
+
 test('all primary routes render without console errors or prohibited wording', async ({
   page,
 }) => {

@@ -72,7 +72,8 @@ export const medicationEffectsSchema = z.object({
   sedation: scale(0, 4).optional(),
   dizziness: scale(0, 4).optional(),
   nausea: scale(0, 4).optional(),
-  tremorOrStiffness: scale(0, 4).optional(),
+  tremor: scale(0, 4).optional(),
+  stiffness: scale(0, 4).optional(),
   innerRestlessness: scale(0, 4).optional(),
   otherSideEffectText: optionalText(),
 })

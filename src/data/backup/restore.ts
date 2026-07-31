@@ -1,6 +1,7 @@
 import type { Table } from 'dexie'
 import type { ZodType } from 'zod'
 import { db } from '../db'
+import { migrateDailyCheckInV1ToV2 } from '../migrations'
 import {
   dailyCheckInSchema,
   socialCommitmentSchema,
@@ -132,7 +133,11 @@ export function validateBackupTables(payload: BackupPayload): ValidatedBackupTab
     dailyCheckIns: parseAll(
       'dailyCheckIns',
       dailyCheckInSchema,
-      payload.tables.dailyCheckIns,
+      // A backup made before the tremor/stiffness split (schemaVersion 1)
+      // would otherwise fail validation against the current schema — bring
+      // each record forward first, the same transform db.ts's Dexie upgrade
+      // applies to records already on this device.
+      payload.tables.dailyCheckIns.map(migrateDailyCheckInV1ToV2),
     ),
     socialCommitments: parseAll(
       'socialCommitments',

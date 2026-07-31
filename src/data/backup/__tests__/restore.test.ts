@@ -88,6 +88,36 @@ describe('validateBackupTables', () => {
     }
     expect(() => validateBackupTables(tampered)).toThrow(InvalidBackupRecordError)
   })
+
+  it('migrates a version-1 dailyCheckIn (tremorOrStiffness) before validating, so an older backup restores cleanly', async () => {
+    const payload = await buildBackupPayload()
+    payload.tables.dailyCheckIns = [
+      {
+        id: 'legacy-check-in',
+        schemaVersion: 1,
+        entryDate: '2026-01-01',
+        recordedAt: '2026-01-01T09:00:00.000Z',
+        updatedAt: '2026-01-01T09:00:00.000Z',
+        sleep: {},
+        mood: {},
+        warningSigns: {},
+        medicationEffects: { tremorOrStiffness: 2 },
+        appetite: {},
+        urges: {},
+        alcohol: {},
+        social: {},
+      },
+    ]
+
+    const tables = validateBackupTables(payload)
+
+    expect(tables.dailyCheckIns).toHaveLength(1)
+    expect(tables.dailyCheckIns[0]?.schemaVersion).toBe(SCHEMA_VERSION)
+    expect(tables.dailyCheckIns[0]?.medicationEffects).toEqual({
+      tremor: 2,
+      stiffness: 2,
+    })
+  })
 })
 
 describe('commitRestore', () => {

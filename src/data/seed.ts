@@ -122,7 +122,7 @@ function buildCheckIns(): DailyCheckIn[] {
     checkIn(2, {
       sleep: { sleepDurationMinutes: 400, sleepQuality: 2 },
       mood: { anxiety: 2, energy: 2 },
-      medicationEffects: { innerRestlessness: 3, tremorOrStiffness: 1 },
+      medicationEffects: { innerRestlessness: 3, tremor: 1 },
     }),
   )
 

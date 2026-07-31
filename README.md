@@ -341,14 +341,21 @@ Presentation components never call Dexie directly — they go through repository
 
 ### Schema versioning
 
-The database (`src/data/db.ts`) currently holds 11 tables across two Dexie
-`version()` blocks: version 1 shipped the 10 core entity tables, and
+The database (`src/data/db.ts`) currently holds 11 tables across three
+Dexie `version()` blocks: version 1 shipped the 10 core entity tables,
 version 2 added `appPreferences` (device-local UI preferences, such as the
 privacy curtain toggle — deliberately excluded from backup/restore since
-it isn't portable personal data). Every persisted record also carries a
-`schemaVersion` field from `SCHEMA_VERSION` (`src/data/schemas/shared.ts`),
-currently `1` — this tracks the shape of individual records, independent of
-the Dexie table-level version number above.
+it isn't portable personal data), and version 3 changed no table or index
+but ran a data-only `.upgrade()` splitting
+`medicationEffects.tremorOrStiffness` into separate `tremor` and
+`stiffness` fields on every existing `dailyCheckIns` record. Every
+persisted record also carries a `schemaVersion` field from
+`SCHEMA_VERSION` (`src/data/schemas/shared.ts`), currently `2` — this
+tracks the shape of individual records, independent of the Dexie
+table-level version number above. The same tremor/stiffness transform is
+applied to any pre-split record encountered during backup restore
+(`src/data/migrations.ts`'s `migrateDailyCheckInV1ToV2`), so an older
+backup file restores cleanly rather than being rejected.
 
 Database changes must include:
 

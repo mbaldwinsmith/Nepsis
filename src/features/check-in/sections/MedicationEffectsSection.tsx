@@ -54,12 +54,23 @@ export function MedicationEffectsSection({ value, onChange }: Props) {
         words={NONE_TO_SEVERE}
       />
       <ScaleInput
-        legend="Tremor or stiffness"
-        name="tremorOrStiffness"
+        legend="Tremor"
+        name="tremor"
         min={0}
         max={4}
-        value={value.tremorOrStiffness}
-        onChange={(v) => onChange({ ...value, tremorOrStiffness: v })}
+        value={value.tremor}
+        onChange={(v) => onChange({ ...value, tremor: v })}
+        minLabel="None"
+        maxLabel="Severe"
+        words={NONE_TO_SEVERE}
+      />
+      <ScaleInput
+        legend="Stiffness"
+        name="stiffness"
+        min={0}
+        max={4}
+        value={value.stiffness}
+        onChange={(v) => onChange({ ...value, stiffness: v })}
         minLabel="None"
         maxLabel="Severe"
         words={NONE_TO_SEVERE}

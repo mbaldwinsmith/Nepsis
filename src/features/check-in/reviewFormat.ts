@@ -47,7 +47,8 @@ const SCALE_FIELDS: Record<string, ScaleDescriptor> = {
   sedation: { min: 0, words: NONE_TO_SEVERE },
   dizziness: { min: 0, words: NONE_TO_SEVERE },
   nausea: { min: 0, words: NONE_TO_SEVERE },
-  tremorOrStiffness: { min: 0, words: NONE_TO_SEVERE },
+  tremor: { min: 0, words: NONE_TO_SEVERE },
+  stiffness: { min: 0, words: NONE_TO_SEVERE },
   innerRestlessness: { min: 0, words: NONE_TO_SEVERE },
 }
 
@@ -96,7 +97,8 @@ const FIELD_LABELS: Record<string, string> = {
   sedation: 'Sedation',
   dizziness: 'Dizziness',
   nausea: 'Nausea',
-  tremorOrStiffness: 'Tremor or stiffness',
+  tremor: 'Tremor',
+  stiffness: 'Stiffness',
   innerRestlessness: 'Inner restlessness or need to move',
   otherSideEffectText: 'Other side effect',
 }

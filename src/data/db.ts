@@ -12,6 +12,7 @@ import type {
   AlertRule,
   AppPreference,
 } from './schemas'
+import { migrateDailyCheckInV1ToV2 } from './migrations'
 
 export class NepsisDatabase extends Dexie {
   dailyCheckIns!: Table<DailyCheckIn, string>
@@ -50,6 +51,20 @@ export class NepsisDatabase extends Dexie {
     this.version(2).stores({
       appPreferences: 'id',
     })
+
+    // Schema version 3: no index change, just a data transform — splits
+    // medicationEffects.tremorOrStiffness into tremor and stiffness on every
+    // existing dailyCheckIns record (see migrations.ts).
+    this.version(3)
+      .stores({})
+      .upgrade(async (tx) => {
+        await tx
+          .table('dailyCheckIns')
+          .toCollection()
+          .modify((record: unknown) => {
+            Object.assign(record as object, migrateDailyCheckInV1ToV2(record))
+          })
+      })
   }
 }
 
