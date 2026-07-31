@@ -9,6 +9,22 @@ version numbers still increase monotonically and are shown in
 
 ## [Unreleased]
 
+### Added
+
+- Every save now confirms itself with a toast: adding or updating a
+  commitment (including marking one attended/cancelled/postponed and its
+  reasons, notice, and after-effect), an observer entry, a medication, a
+  logged dose, a transition event, and a health measurement. Commitment
+  edits auto-save as you go, so their confirmation is debounced to one
+  toast per burst of changes rather than one per click or keystroke.
+
+### Fixed
+
+- CSV export, encrypted backup creation, and delete-all-data now show an
+  error toast if the operation itself fails, instead of failing silently
+  with no feedback at all (only pre-flight validation, e.g. an empty
+  category selection or a mismatched passphrase, was previously reported).
+
 ## [0.3.0] — 2026-07-29
 
 ### Added

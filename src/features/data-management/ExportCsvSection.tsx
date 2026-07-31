@@ -180,6 +180,8 @@ export function ExportCsvSection() {
 
       triggerDownloads(files)
       showToast('Export downloaded', 'success')
+    } catch {
+      showToast('Could not export your data. Please try again.', 'error')
     } finally {
       setExporting(false)
     }

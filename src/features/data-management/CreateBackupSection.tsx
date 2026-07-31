@@ -35,6 +35,8 @@ export function CreateBackupSection() {
       setPassphrase('')
       setConfirmPassphrase('')
       showToast('Encrypted backup downloaded', 'success')
+    } catch {
+      showToast('Could not create your backup. Please try again.', 'error')
     } finally {
       setCreating(false)
     }

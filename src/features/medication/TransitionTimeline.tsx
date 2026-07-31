@@ -27,15 +27,18 @@ export function TransitionTimeline({ events, onCreate }: Props) {
   const [type, setType] = useState<TransitionEventType>('clinicianAppointment')
   const [title, setTitle] = useState('')
   const [occurredAt, setOccurredAt] = useState(() => nowIsoDateTime().slice(0, 16))
+  const [saving, setSaving] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim()) return
+    setSaving(true)
     await onCreate({
       type,
       title: title.trim(),
       occurredAt: new Date(occurredAt).toISOString(),
     })
+    setSaving(false)
     setTitle('')
   }
 
@@ -82,8 +85,8 @@ export function TransitionTimeline({ events, onCreate }: Props) {
             value={occurredAt}
             onChange={setOccurredAt}
           />
-          <button type="submit" className="btn btn-primary">
-            Add event
+          <button type="submit" className="btn btn-primary" disabled={saving}>
+            {saving ? 'Saving…' : 'Add event'}
           </button>
         </form>
       </AddDisclosure>

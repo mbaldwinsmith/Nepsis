@@ -11,6 +11,7 @@ test('adds a medication, logs a dose, and records a dose-change transition event
   await expect(
     page.getByRole('listitem').filter({ hasText: 'Sample medication A' }),
   ).toBeVisible()
+  await expect(page.getByText('Medication added')).toBeVisible()
 
   await page.getByText('+ Log a dose').click()
   await page
@@ -21,6 +22,7 @@ test('adds a medication, logs a dose, and records a dose-change transition event
   await expect(
     page.locator('li.hint').filter({ hasText: 'Sample medication A' }),
   ).toBeVisible()
+  await expect(page.getByText('Dose logged')).toBeVisible()
 
   await page.getByText('+ Add an event').click()
   await page
@@ -32,6 +34,7 @@ test('adds a medication, logs a dose, and records a dose-change transition event
   await expect(
     page.getByText('Dose increased to 10mg (agreed with prescriber)'),
   ).toBeVisible()
+  await expect(page.getByText('Event added')).toBeVisible()
 })
 
 test('records a weight measurement and a liver-function result', async ({ page }) => {
@@ -41,6 +44,7 @@ test('records a weight measurement and a liver-function result', async ({ page }
   await page.getByLabel('Value').fill('78.2')
   await page.getByRole('button', { name: 'Save measurement' }).click()
   await expect(page.getByText('78.2 kg')).toBeVisible()
+  await expect(page.getByText('Measurement recorded')).toBeVisible()
 
   await page.getByLabel('Type').selectOption('alt')
   await page.getByLabel('Value').fill('28')
@@ -48,4 +52,6 @@ test('records a weight measurement and a liver-function result', async ({ page }
   await page.getByLabel('Reference maximum (optional)').fill('55')
   await page.getByRole('button', { name: 'Save measurement' }).click()
   await expect(page.getByText('28 U/L')).toBeVisible()
+  // .last() since the first save's toast may still be visible/stacked.
+  await expect(page.getByText('Measurement recorded').last()).toBeVisible()
 })
