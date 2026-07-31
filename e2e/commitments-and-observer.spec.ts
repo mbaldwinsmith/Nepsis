@@ -60,6 +60,54 @@ test('undoing a commitment outcome change reverts it', async ({ page }) => {
   ).not.toBeChecked()
 })
 
+test('deleting a commitment removes it, and Undo restores it', async ({ page }) => {
+  await page.goto('/#/commitments')
+
+  await page.getByText('+ Add a plan').click()
+  await page.getByLabel('Title (optional)').fill('Dinner with family')
+  await page.getByRole('button', { name: 'Add commitment' }).click()
+  await expect(page.getByText('Dinner with family')).toBeVisible()
+
+  const card = page.locator('div.card').filter({ hasText: 'Dinner with family' })
+  await card.getByRole('button', { name: 'Remove' }).click()
+  await expect(page.getByText('Dinner with family')).not.toBeVisible()
+  await expect(page.getByText('Commitment deleted')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Undo' }).click()
+  await expect(page.getByText('Dinner with family')).toBeVisible()
+})
+
+test('the add-plan form resets after adding, so a stray resubmission would not silently duplicate', async ({
+  page,
+}) => {
+  await page.goto('/#/commitments')
+
+  await page.getByText('+ Add a plan').click()
+  await page.getByLabel('Title (optional)').fill('Team meeting')
+  await page
+    .getByRole('radiogroup', { name: 'Type' })
+    .getByText('Work', { exact: true })
+    .click()
+  await page
+    .getByRole('radiogroup', { name: 'Importance' })
+    .getByText('Essential', { exact: true })
+    .click()
+  await page.getByRole('button', { name: 'Add commitment' }).click()
+  await expect(page.getByText('Commitment added')).toBeVisible()
+
+  await expect(page.getByLabel('Title (optional)')).toHaveValue('')
+  await expect(
+    page
+      .getByRole('radiogroup', { name: 'Type' })
+      .getByRole('radio', { name: 'Friends' }),
+  ).toBeChecked()
+  await expect(
+    page
+      .getByRole('radiogroup', { name: 'Importance' })
+      .getByRole('radio', { name: 'Routine' }),
+  ).toBeChecked()
+})
+
 test('submits an observer entry and it appears in the app without console errors', async ({
   page,
 }) => {

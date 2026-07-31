@@ -14,7 +14,7 @@ import { COMMITMENT_OUTCOME_LABELS } from '../../utils/enumLabels'
 const UPDATE_TOAST_DELAY_MS = 700
 
 export function CommitmentsPage() {
-  const { commitments, loading, create, update } = useCommitments()
+  const { commitments, loading, create, update, remove, restore } = useCommitments()
   const { showToast } = useToast()
   const updateToastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -60,6 +60,22 @@ export function CommitmentsPage() {
     }
   }
 
+  async function handleRemove(commitment: SocialCommitment) {
+    try {
+      await remove(commitment.id)
+      showToast('Commitment deleted', 'success', {
+        label: 'Undo',
+        onClick: () => {
+          restore(commitment).catch(() => {
+            showToast('Could not undo. Please try again.', 'error')
+          })
+        },
+      })
+    } catch {
+      showToast('Could not delete this commitment. Please try again.', 'error')
+    }
+  }
+
   return (
     <div className="page stack">
       <h1>Plans & commitments</h1>
@@ -77,6 +93,7 @@ export function CommitmentsPage() {
               commitment={commitment}
               onUpdate={handleUpdate}
               onOutcomeChange={handleOutcomeChange}
+              onRemove={handleRemove}
             />
           )}
         />

@@ -21,6 +21,8 @@ version numbers still increase monotonically and are shown in
   pattern already used for dismissing a review card on Home: archiving
   or unarchiving a medication, and changing a commitment's outcome
   (e.g. marking it cancelled) reverts in one tap.
+- Individual commitments can now be removed with a "Remove" button on
+  each card, with its own "Commitment deleted" toast and Undo action.
 
 ### Fixed
 
@@ -28,6 +30,9 @@ version numbers still increase monotonically and are shown in
   error toast if the operation itself fails, instead of failing silently
   with no feedback at all (only pre-flight validation, e.g. an empty
   category selection or a mismatched passphrase, was previously reported).
+- The "Add a plan" form now resets all its fields after adding a
+  commitment (previously only the title cleared), so a stray extra tap
+  on "Add commitment" no longer silently creates a duplicate.
 
 ## [0.3.0] — 2026-07-29
 

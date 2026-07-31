@@ -34,7 +34,11 @@ export function NewCommitmentForm({ onCreate }: Props) {
       importance,
     })
     setSaving(false)
+    setPlannedDate(todayIsoDate())
+    setPlannedTime('')
     setTitle('')
+    setType('friends')
+    setImportance('routine')
   }
 
   return (
